@@ -1,0 +1,55 @@
+    With(
+        {
+            cellPadding: "1rem",
+            borderColor: "#e9ecef",
+            textColor: "#4a4a4a",
+            headerBg: "#f8f9fa",
+            headerColor: "#1a1a1a",
+            baseStyle: "padding: 1rem; border-bottom: 1px solid #e9ecef; color: #4a4a4a;",
+            baseHeaderStyle: "background: #f8f9fa; padding: 1rem; text-align: left; font-weight: 600; color: #1a1a1a; border-bottom: 2px solid #e9ecef;",
+            // 列幅の定義
+            colWidths: {
+                name: "width: 20%;",
+                dept: "width: 30%;",
+                position: "width: 30%;",
+                year: "width: 20%;"
+            }
+        },
+        "<div style='max-width: 1200px; margin: 2rem auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;'>
+            <table style='width: 100%; border-collapse: collapse; background: white; font-family: system-ui, -apple-system, sans-serif;'>
+                <thead>
+                    <tr>
+                        <th style='" & baseHeaderStyle & colWidths.name & "'>社員名</th>
+                        <th style='" & baseHeaderStyle & colWidths.dept & "'>部署</th>
+                        <th style='" & baseHeaderStyle & colWidths.position & "'>役職</th>
+                        <th style='" & baseHeaderStyle & colWidths.year & "'>入社年</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style='" & baseStyle & colWidths.name & "'>山田 太郎</td>
+                        <td style='" & baseStyle & colWidths.dept & "'>営業部</td>
+                        <td style='" & baseStyle & colWidths.position & "'>マネージャー</td>
+                        <td style='" & baseStyle & colWidths.year & "'>2018</td>
+                    </tr>
+                    <tr>
+                        <td style='" & baseStyle & colWidths.name & "'>鈴木 花子</td>
+                        <td style='" & baseStyle & colWidths.dept & "'>開発部</td>
+                        <td style='" & baseStyle & colWidths.position & "'>シニアエンジニア</td>
+                        <td style='" & baseStyle & colWidths.year & "'>2019</td>
+                    </tr>
+                    <tr>
+                        <td style='" & baseStyle & colWidths.name & "'>佐藤 健一</td>
+                        <td style='" & baseStyle & colWidths.dept & "'>マーケティング部</td>
+                        <td style='" & baseStyle & colWidths.position & "'>チームリーダー</td>
+                        <td style='" & baseStyle & colWidths.year & "'>2020</td>
+                    </tr>
+                    <tr>
+                        <td style='" & baseStyle & colWidths.name & "'>田中 美咲</td>
+                        <td style='" & baseStyle & colWidths.dept & "'>人事部</td>
+                        <td style='" & baseStyle & colWidths.position & "'>スペシャリスト</td>
+                        <td style='" & baseStyle & colWidths.year & "'>2021</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>"
