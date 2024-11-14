@@ -1,1 +1,114 @@
 
+<div style="
+    width: 250px;
+    height: 100%;
+    background-color: #FFFFFF;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    padding: 12px;
+    font-family: Segoe UI, sans-serif;
+">
+    <div style="margin-bottom: 20px;">
+        <button style="
+            width: 100%;
+            padding: 8px;
+            background: none;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            color: #4B5563;
+            cursor: pointer;
+        ">
+            ←
+        </button>
+    </div>
+
+    <nav>
+        <a href="#" style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            text-decoration: none;
+            color: #2563EB;
+            background-color: #EFF6FF;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        ">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>作成日</span>
+        </a>
+
+        <a href="#" style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            text-decoration: none;
+            color: #4B5563;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        ">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M6 22V2h12v20H6z"></path>
+                <path d="M9 6h6"></path>
+                <path d="M9 10h6"></path>
+            </svg>
+            <span>作成部署</span>
+        </a>
+
+        <a href="#" style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            text-decoration: none;
+            color: #4B5563;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        ">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span>ID</span>
+        </a>
+
+        <a href="#" style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            text-decoration: none;
+            color: #4B5563;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        ">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>有効期限</span>
+        </a>
+
+        <a href="#" style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            text-decoration: none;
+            color: #4B5563;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        ">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>申請者</span>
+        </a>
+    </nav>
+</div>
