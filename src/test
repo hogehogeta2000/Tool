@@ -1,28 +1,44 @@
-<label style='display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.5rem; cursor: pointer;'>
-  <span style='display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background-color: #f3f4f6; border-radius: 50%;'>
-    <svg style='width: 1.25rem; height: 1.25rem;' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#6b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
-      <path d='M12 4v12M8 8l4-4l4 4'/>
-    </svg>
-  </span>
-  <span style='font-family: sans-serif; font-size: 0.875rem; color: #374151;'>ファイルを選択</span>
-</label>
-<div
-  style="
-    width: 100%;
-    min-height: 100px;
-    padding: 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-    font-size: 14px;
-    line-height: 1.5;
-    background-color: #f9fafb;
-    margin-top: 8px;
-    resize: vertical;
-    overflow: auto;
-    cursor: default;
-    user-select: text;
-  "
-  role="textbox"
-  aria-readonly="true"
-  aria-label="コメント表示"
-></div>
+Switch(
+    Mod(
+        ThisItem.Value.MessageId,
+        2
+    ),
+    1,
+    $"<div style='max-width: 70%; margin-bottom: 16px; margin-right: auto; display: flex; gap: 8px;'>
+    <div style='width: 32px; height: 32px; background-color: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;'>
+        T
+    </div>
+    <div>
+        <div style='font-size: 12px; color: #666666; margin-bottom: 4px;'>
+            {ThisItem.Value.SenderName}
+        </div>
+        <div style='background-color: #ffffff; padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);'>
+            <div style='margin-bottom: 4px;'>
+                {ThisItem.Value.MessageText}
+            </div>
+            <div style='font-size: 11px; color: #666666; text-align: right;'>
+                00:00
+            </div>
+        </div>
+    </div>
+</div>",
+    0,
+    $"<div style='max-width: 70%; margin-bottom: 16px; margin-left: auto; display: flex; flex-direction: row-reverse; gap: 8px;'>
+    <div style='width: 32px; height: 32px; background-color: #128C7E; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;'>
+        M
+    </div>
+    <div>
+        <div style='font-size: 12px; color: #666666; margin-bottom: 4px; text-align: right;'>
+            自分
+        </div>
+        <div style='background-color: #dcf8c6; padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);'>
+            <div style='margin-bottom: 4px;'>
+                {ThisItem.Value.MessageText}
+            </div>
+            <div style='font-size: 11px; color: #666666; text-align: right;'>
+                10:32 ✓✓
+            </div>
+        </div>
+    </div>
+</div>"
+)
