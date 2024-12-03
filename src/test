@@ -6,3 +6,23 @@
   </span>
   <span style='font-family: sans-serif; font-size: 0.875rem; color: #374151;'>ファイルを選択</span>
 </label>
+<div
+  style="
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: #f9fafb;
+    margin-top: 8px;
+    resize: vertical;
+    overflow: auto;
+    cursor: default;
+    user-select: text;
+  "
+  role="textbox"
+  aria-readonly="true"
+  aria-label="コメント表示"
+></div>
