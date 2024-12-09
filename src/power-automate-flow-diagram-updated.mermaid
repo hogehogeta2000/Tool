@@ -1,0 +1,31 @@
+flowchart TD
+    Start[Power Appsトリガー] --> TryCatch{Try-Catch開始}
+    
+    subgraph MainFlow[メインフロー]
+        TryCatch --> GetJSON[JSONファイル取得]
+        GetJSON --> ParseJSON[JSONパース]
+        ParseJSON --> FilterArray[配列フィルター\nステータスコード一致確認]
+        FilterArray --> SendMail[メール送信]
+    end
+    
+    subgraph ErrorHandler[エラーハンドリング]
+        CreateLog[エラーログ作成]
+        SaveLog[SharePointに\nログファイル保存]
+        CreateLog --> SaveLog
+    end
+    
+    GetJSON --エラー--> FileError[ファイル不存在エラー]
+    ParseJSON --エラー--> ParseError[JSONパースエラー]
+    SendMail --エラー--> MailError[メール送信エラー]
+    
+    FileError --> CreateLog
+    ParseError --> CreateLog
+    MailError --> CreateLog
+    
+    SaveLog --> EndFlow[フロー終了]
+    SendMail --> EndFlow
+    
+    style Start fill:#90EE90
+    style EndFlow fill:#FFB6C1
+    style ErrorHandler fill:#FFE4E1
+    style MainFlow fill:#E6E6FA
