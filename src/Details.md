@@ -22,18 +22,13 @@
 フローのトリガーは Power Apps (V2) を想定します。  
 **Power Apps から渡される引数の例:**
 
-1. `PowerAppsTrigger_input_jsonFileIdentifier`  
+1. `FileIdentifier`  
    - SharePoint ドキュメントライブラリ内の JSON ファイルを特定するための識別子 (パスまたはID)
-2. `PowerAppsTrigger_input_workflowStatusCode`  
+2. `StatusCode`  
    - ワークフローのステータスコード (例: "001", "002", …)
-3. `PowerAppsTrigger_input_jsonContent`  
+3. `ListId`  
    - 該当 JSON ファイルの実体を文字列として受け取った場合  
    - Power Apps 側で取得済みの JSON 文字列を送ってくることを想定
-
-これらは **変数の初期化は行わず**、**トリガー出力**としてフロー内で参照します。  
-たとえば動的コンテンツから `triggerOutputs()?['body/PowerAppsTrigger_input_jsonContent']` のように取得できます。
-
----
 
 ## 2.2 JSON コンテンツを Compose アクションに格納
 
@@ -187,47 +182,34 @@
 
 ```mermaid
 flowchart TB
-    A[Power Apps Trigger<br>
-      (jsonFileIdentifier,<br>
-       workflowStatusCode,<br>
-       jsonContent)] --> SCOPE_MAIN
+    A["Power Apps Trigger (jsonFileIdentifier, workflowStatusCode, jsonContent)"] --> SCOPE_MAIN
 
-    subgraph SCOPE_MAIN[Scope: Main Process]
+    subgraph SCOPE_MAIN ["Scope: Main Process"]
       direction TB
-      M1[Compose<br>"cmpJsonContent"<br>
-         @triggerOutputs()['…jsonContent']] --> M2
-      M2[Compose<br>"cmpParsedJson"<br>
-         = json(cmpJsonContent)] --> M3
-      M3[Filter array<br>"fltLogByStatusCd"<br>
-         From: outputs('cmpParsedJson')?['Log']<br>
-         Condition: item()['StatusCd'] = workflowStatusCode] --> M4
-      M4[Compose<br>"cmpLogObjectForStatus"<br>
-         = first(body('fltLogByStatusCd'))] --> M5
-      M5[SP Get items<br>
-         "getTransactionItem"] --> M6
-      M6[Compose<br>"cmpHtmlBody"] --> M7[Start an approval<br>
-         "approvalStart"]
-      M7 --> M8[Wait for an approval<br>"approvalWait"]
-      M8 --> M9{condApprovalOutcome<br>
-         outcome = 差し戻し?}
-      M9 --Yes--> M10[子フロー: 差し戻し処理<br>
-         (JSON 更新, メール通知)]
-      M9 --No--> M11[子フロー: 承認/却下処理<br>
-         (ログ追加, 次工程)]
+      M1["Compose - cmpJsonContent: @triggerOutputs()[…jsonContent]"] --> M2
+      M2["Compose - cmpParsedJson: json(cmpJsonContent)"] --> M3
+      M3["Filter array - fltLogByStatusCd: From outputs(cmpParsedJson)?[Log], Condition item()[StatusCd] = workflowStatusCode"] --> M4
+      M4["Compose - cmpLogObjectForStatus: first(body(fltLogByStatusCd))"] --> M5
+      M5["SP Get items - getTransactionItem"] --> M6
+      M6["Compose - cmpHtmlBody"] --> M7["Start an approval - approvalStart"]
+      M7 --> M8["Wait for an approval - approvalWait"]
+      M8 --> M9{"condApprovalOutcome: outcome = 差し戻し?"}
+      M9 --Yes--> M10["子フロー: 差し戻し処理 (JSON 更新, メール通知)"]
+      M9 --No--> M11["子フロー: 承認/却下処理 (ログ追加, 次工程)"]
     end
 
-    SCOPE_MAIN -->|Success| END[End]
+    SCOPE_MAIN -->|Success| END["End"]
 
     SCOPE_MAIN -->|Fail/Timeout| SCOPE_ERROR
 
-    subgraph SCOPE_ERROR[Scope: Error Handling<br>(Run After SCOPE_MAIN fails)]
+    subgraph SCOPE_ERROR ["Scope: Error Handling (Run After SCOPE_MAIN fails)"]
       direction TB
-      E1[Compose<br>"cmpErrorInfo"<br>
-         @actions('scpMainProcess')['error']] --> E2
-      E2[ログ書き込み<br>(エラーファイル)] --> E3[メール通知<br>(管理者・申請者)]
+      E1["Compose - cmpErrorInfo: @actions(scpMainProcess)[error]"] --> E2
+      E2["ログ書き込み - エラーファイル"] --> E3["メール通知 - 管理者・申請者"]
     end
 
     SCOPE_ERROR --> END
+
 ```
 
 - **M3 → M4** がポイントで、**[Log] 配列**から**ステータスコードに合致**する要素をFilterし、**first()** で1件目を取得する流れを示しています。  
