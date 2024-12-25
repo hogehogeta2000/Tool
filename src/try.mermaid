@@ -1,0 +1,16 @@
+flowchart TB
+    A[Power Apps<br>Trigger] --> B[Compose: cmpJsonContent<br>jsonContentを格納]
+    B --> C[Compose: cmpParsedJson<br>json(outputs('cmpJsonContent'))]
+    C --> D[Extract Log<br>(cmpLogObjectForStatus)]
+    D --> E[Get SP List Item<br>フィルタ ID=...]
+    E --> F[Compose: cmpHtmlBody<br>(HTML文面)]
+    F --> G[Start an approval<br>(承認コネクタ)]
+    G --> H{承認結果<br>(差し戻し？)}
+    H -- No --> I[子フロー呼び出し<br>Update JSON<br>ログ追加<br>次ステータスフロー呼び出し]
+    H -- Yes --> J[子フロー呼び出し<br>差し戻しログ追加<br>申請者へメール]
+    I --> K[End]
+    J --> K[End]
+
+    subgraph "Error Handling Scope"
+       M[Main Process] --> N[On Error<br>Log & Notification]
+    end
