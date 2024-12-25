@@ -1,16 +1,16 @@
 flowchart TB
-    A[Power Apps Trigger<br>-- (jsonFileIdentifier,<br>workflowStatusCode,<br>jsonContent)] --> SCOPE_MAIN
+    A[Power Apps Trigger\n(jsonFileIdentifier,\nworkflowStatusCode,\njsonContent)] --> SCOPE_MAIN
 
-    subgraph SCOPE_MAIN[Scope: Main Process]
+    subgraph SCOPE_MAIN [Scope: Main Process]
         direction TB
-        M1[Compose: cmpJsonContent<br>格納 (jsonContent)]
-        M2[Compose: cmpParsedJson<br>json(outputs('cmpJsonContent'))]
-        M3[ステータス別 Log 抽出<br>cmpLogObjectForStatus]
+        M1[Compose: cmpJsonContent\njsonContentを格納]
+        M2[Compose: cmpParsedJson\njson(outputs('cmpJsonContent'))]
+        M3[ステータス別 Log 抽出\ncmpLogObjectForStatus]
         M4[SP List アイテム取得]
-        M5[Compose: cmpHtmlBody<br>(HTML 生成)]
-        M6[Start an approval<br>(承認コネクタ)]
-        M7[承認結果の分岐<br>(差し戻し or 承認 etc.)]
-        M8[子フロー呼び出し<br>(JSON 更新, ログ追加…)]
+        M5[Compose: cmpHtmlBody\nHTML 生成]
+        M6[Start an approval\n承認コネクタ]
+        M7[承認結果の分岐\n(差し戻し or 承認 etc.)]
+        M8[子フロー呼び出し\n(JSON 更新, ログ追加…)]
 
         M1 --> M2
         M2 --> M3
@@ -25,11 +25,11 @@ flowchart TB
 
     SCOPE_MAIN -->|Fail or Timeout| SCOPE_ERROR
 
-    subgraph SCOPE_ERROR[Scope: Error Handling<br>(Run after SCOPE_MAIN fails)]
+    subgraph SCOPE_ERROR [Scope: Error Handling\n(Run after SCOPE_MAIN fails)]
         direction TB
-        E1[Compose: Error Info<br>@actions('Scope: Main Process')?['error']]
-        E2[エラー内容のログ保存<br>JSON ファイルアップロード]
-        E3[エラー通知<br>(管理者 / 申請者)]
+        E1[Compose: Error Info\n@actions('Scope: Main Process')?['error']]
+        E2[エラー内容のログ保存\nJSON ファイルアップロード]
+        E3[エラー通知\n(管理者 / 申請者)]
         E1 --> E2
         E2 --> E3
     end
