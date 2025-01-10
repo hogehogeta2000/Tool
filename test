@@ -1,35 +1,31 @@
-<!-- スクロール可能なコンテナ -->
-<div class="overflow-x-auto w-full">
-  <!-- テーブル本体 -->
-  <table class="w-full border-collapse">
-    <!-- ヘッダー部分 -->
-    <thead class="bg-gray-50 sticky top-0">
-      <tr>
-        <th class="py-3 px-4 border-b border-r min-w-[100px] whitespace-nowrap">申請種別</th>
-        <th class="py-3 px-4 border-b border-r min-w-[120px] whitespace-nowrap">登録完了希望日</th>
-        <th class="py-3 px-4 border-b border-r min-w-[100px] whitespace-nowrap">資料区分</th>
-        <th class="py-3 px-4 border-b border-r min-w-[200px]">資料名</th>
-        <th class="py-3 px-4 border-b border-r min-w-[150px] whitespace-nowrap">現担当所管</th>
-        <th class="py-3 px-4 border-b border-r min-w-[100px] whitespace-nowrap">現担当者</th>
-        <th class="py-3 px-4 border-b border-r min-w-[100px] whitespace-nowrap">登録番号</th>
-        <th class="py-3 px-4 border-b border-r min-w-[100px] whitespace-nowrap">申請日</th>
-        <th class="py-3 px-4 border-b border-r min-w-[150px] whitespace-nowrap">申請所管</th>
-        <th class="py-3 px-4 border-b min-w-[100px] whitespace-nowrap">申請者</th>
+<div style="overflow-x: auto; width: 100%;">
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #f9fafb; position: sticky; top: 0;">
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">申請種別</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 120px; white-space: nowrap; text-align: left;">登録完了希望日</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">資料区分</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 200px; text-align: left;">資料名</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 150px; white-space: nowrap; text-align: left;">現担当所管</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">現担当者</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">登録番号</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">申請日</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 150px; white-space: nowrap; text-align: left;">申請所管</th>
+        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">申請者</th>
       </tr>
     </thead>
-    <!-- データ行のサンプル -->
     <tbody>
-      <tr class="hover:bg-gray-50">
-        <td class="py-3 px-4 border-b border-r">新規</td>
-        <td class="py-3 px-4 border-b border-r">2024-01-15</td>
-        <td class="py-3 px-4 border-b border-r">文書</td>
-        <td class="py-3 px-4 border-b border-r">長い資料名が入る可能性のあるセル</td>
-        <td class="py-3 px-4 border-b border-r">システム開発部</td>
-        <td class="py-3 px-4 border-b border-r">山田太郎</td>
-        <td class="py-3 px-4 border-b border-r">REG-001</td>
-        <td class="py-3 px-4 border-b border-r">2024-01-10</td>
-        <td class="py-3 px-4 border-b border-r">情報システム部</td>
-        <td class="py-3 px-4 border-b">鈴木一郎</td>
+      <tr style="background-color: white;">
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">新規</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">2024-01-15</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">文書</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">長い資料名が入る可能性のあるセル</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">システム開発部</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">山田太郎</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">REG-001</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">2024-01-10</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">情報システム部</td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb;">鈴木一郎</td>
       </tr>
     </tbody>
   </table>
