@@ -1,32 +1,74 @@
+はい、With関数を使用して列幅を制御する方式で、ヘッダーと行のHTML文字列を提案させていただきます。
+
+まず、With関数での列幅設定のイメージです：
+```powerapps
+With(
+    {
+        widths: {
+            申請種別: 100,
+            登録完了希望日: 120,
+            資料区分: 100,
+            資料名: 200,
+            現担当所管: 150,
+            現担当者: 100,
+            登録番号: 100,
+            申請日: 100,
+            申請所管: 150,
+            申請者: 100
+        }
+    },
+    // ここでHTML文字列を生成
+)
+```
+
+ヘッダー用HTML:
+```html
 <div style="overflow-x: auto; width: 100%;">
-  <table style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr style="background-color: #f9fafb; position: sticky; top: 0;">
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">申請種別</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 120px; white-space: nowrap; text-align: left;">登録完了希望日</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">資料区分</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 200px; text-align: left;">資料名</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 150px; white-space: nowrap; text-align: left;">現担当所管</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">現担当者</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">登録番号</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">申請日</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; min-width: 150px; white-space: nowrap; text-align: left;">申請所管</th>
-        <th style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; min-width: 100px; white-space: nowrap; text-align: left;">申請者</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="background-color: white;">
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">新規</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">2024-01-15</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">文書</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">長い資料名が入る可能性のあるセル</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">システム開発部</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">山田太郎</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">REG-001</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">2024-01-10</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">情報システム部</td>
-        <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb;">鈴木一郎</td>
-      </tr>
-    </tbody>
+  <table style="width: 1220px; table-layout: fixed; border-collapse: collapse;">
+    <tr style="background-color: #f9fafb;">
+      <th style="width: " & widths.申請種別 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">申請種別</th>
+      <th style="width: " & widths.登録完了希望日 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">登録完了希望日</th>
+      <th style="width: " & widths.資料区分 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">資料区分</th>
+      <th style="width: " & widths.資料名 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; text-align: left;">資料名</th>
+      <th style="width: " & widths.現担当所管 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">現担当所管</th>
+      <th style="width: " & widths.現担当者 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">現担当者</th>
+      <th style="width: " & widths.登録番号 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">登録番号</th>
+      <th style="width: " & widths.申請日 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">申請日</th>
+      <th style="width: " & widths.申請所管 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">申請所管</th>
+      <th style="width: " & widths.申請者 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; text-align: left;">申請者</th>
+    </tr>
   </table>
 </div>
+```
+
+データ行用HTML:
+```html
+<div style="overflow-x: auto; width: 100%;">
+  <table style="width: 1220px; table-layout: fixed; border-collapse: collapse;">
+    <tr style="background-color: white;">
+      <td style="width: " & widths.申請種別 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">新規</td>
+      <td style="width: " & widths.登録完了希望日 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">2024-01-15</td>
+      <td style="width: " & widths.資料区分 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">文書</td>
+      <td style="width: " & widths.資料名 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">長い資料名が入る可能性のあるセル</td>
+      <td style="width: " & widths.現担当所管 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">システム開発部</td>
+      <td style="width: " & widths.現担当者 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">山田太郎</td>
+      <td style="width: " & widths.登録番号 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">REG-001</td>
+      <td style="width: " & widths.申請日 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">2024-01-10</td>
+      <td style="width: " & widths.申請所管 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">情報システム部</td>
+      <td style="width: " & widths.申請者 & "px; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis;">鈴木一郎</td>
+    </tr>
+  </table>
+</div>
+```
+
+変更・改善のポイント：
+
+1. データ行には以下のスタイルを追加
+- `overflow: hidden`: はみ出し防止
+- `text-overflow: ellipsis`: はみ出した場合に...で表示
+
+2. 共通のスタイリング
+- `table-layout: fixed`: 列幅の固定
+- `border-collapse: collapse`: 境界線の重なりを防止
+
+これらのHTML文字列は、Power AppsのHTMLテキストコントロールで使用できます。必要に応じて、With関数内の`widths`オブジェクトの値を調整してください。
