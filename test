@@ -1,3 +1,12 @@
-<div style='margin-bottom:16px;'>
-  <span style='font-size:16px; font-weight:600;'>基本情報</span>
+<div style='margin-bottom:16px; padding:8px; background-color:#F3F4F6;'>
+  <span style='font-size:16px; font-weight:600;'>処理状況</span>
+</div>
+
+<div style='margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid #E5E7EB;'>
+  <span style='font-size:16px; font-weight:600;'>申請者情報</span>
+</div>
+
+
+<div style='margin-bottom:16px; padding-left:8px; border-left:4px solid #2563EB;'>
+  <span style='font-size:16px; font-weight:600;'>確認事項</span>
 </div>
