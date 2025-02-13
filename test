@@ -1,13 +1,22 @@
 <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; width: 100%; text-align: left;">
-    <div style="margin-bottom: 10px;">
-        <span style="background: #dee2e6; color: #333; padding: 5px 8px; border-radius: 5px; font-size: 0.9em;">ステータス</span>
-        <span style="font-size: 1.1em; color: #333; margin-left: 5px;">一次承認</span>
+    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+        <span style="background: #dee2e6; color: #333; padding: 5px 8px; border-radius: 5px; font-size: 0.9em; width: 80px; text-align: center;">
+            ステータス
+        </span>
+        <span style="font-size: 1.1em; color: #333; margin-left: 10px;">
+            一次承認
+        </span>
     </div>
-    <div>
-        <span style="background: #dee2e6; color: #333; padding: 5px 8px; border-radius: 5px; font-size: 0.9em;">担当者</span>
-        <span style="font-size: 1.1em; color: #333; margin-left: 5px;">○○</span>
+    <div style="display: flex; align-items: center;">
+        <span style="background: #dee2e6; color: #333; padding: 5px 8px; border-radius: 5px; font-size: 0.9em; width: 80px; text-align: center;">
+            担当者
+        </span>
+        <span style="font-size: 1.1em; color: #333; margin-left: 10px;">
+            ○○
+        </span>
     </div>
 </div>
+
 
 
 まず、With関数での列幅設定のイメージです：
