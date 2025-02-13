@@ -1,4 +1,11 @@
-はい、With関数を使用して列幅を制御する方式で、ヘッダーと行のHTML文字列を提案させていただきます。
+<div style="background: #f4f4f4; padding: 15px; border-radius: 10px; width: 100%; text-align: left;">
+    <div style="font-size: 1.2em; font-weight: bold; color: #007bff; margin-bottom: 10px;">
+        ステータス: <span style="color: black;">一次承認</span>
+    </div>
+    <div style="font-size: 1.1em; background: #007bff; color: white; padding: 5px 10px; border-radius: 5px; display: inline-block;">
+        担当者: ○○
+    </div>
+</div>
 
 まず、With関数での列幅設定のイメージです：
 ```powerapps
