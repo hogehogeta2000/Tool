@@ -1,16 +1,18 @@
-Sub GetHyperlinkFromCell()
+Sub GetHyperlinkFromWorksheet()
     Dim ws As Worksheet
+    Dim hl As Hyperlink
     Dim rng As Range
-    Dim hyperlinkURL As String
     
     Set ws = ActiveSheet
-    Set rng = Selection ' 選択されたセル
+    Set rng = Selection
     
-    ' 選択セルにハイパーリンクがあるか確認
-    If rng.Hyperlinks.Count > 0 Then
-        hyperlinkURL = rng.Hyperlinks(1).Address
-        Debug.Print "リンク先URL: " & hyperlinkURL
-    Else
-        Debug.Print "このセルにはハイパーリンクがありません。"
-    End If
+    ' シート内のすべてのハイパーリンクを検索
+    For Each hl In ws.Hyperlinks
+        If hl.Range.Address = rng.Address Then
+            Debug.Print "リンク先URL: " & hl.Address
+            Exit Sub
+        End If
+    Next
+    
+    Debug.Print "このセルにはハイパーリンクがありません。"
 End Sub
