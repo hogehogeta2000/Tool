@@ -1,0 +1,443 @@
+Screens:
+  Screen3:
+    Children:
+      - ScreenContainer2:
+          Control: GroupContainer@1.3.0
+          Variant: AutoLayout
+          Properties:
+            Fill: =RGBA(245, 245, 245, 1)
+            Height: =Parent.Height
+            LayoutAlignItems: =LayoutAlignItems.Stretch
+            LayoutDirection: =LayoutDirection.Vertical
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+          Children:
+            - BottomContainer2:
+                Control: GroupContainer@1.3.0
+                Variant: AutoLayout
+                Properties:
+                  Fill: =Color.White
+                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutWrap: =true
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                Children:
+                  - SidebarContainer2:
+                      Control: GroupContainer@1.3.0
+                      Variant: AutoLayout
+                      Properties:
+                        Fill: =RGBA(255, 255, 255, 1)
+                        FillPortions: =3
+                        LayoutDirection: =LayoutDirection.Vertical
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - HeaderContainer2_2:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =Color.WhiteSmoke
+                              FillPortions: =0
+                              Height: =75
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =8
+                              PaddingLeft: =8
+                              PaddingRight: =8
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - Image2:
+                                  Control: Image@2.2.3
+                                  Properties:
+                                    Height: =Parent.Height * 0.9
+                                    Image: =User().Image
+                                    RadiusBottomLeft: =Self.Width
+                                    RadiusBottomRight: =Self.Width
+                                    RadiusTopLeft: =Self.Width
+                                    RadiusTopRight: =Self.Width
+                                    Width: =Self.Height
+                              - Label3:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    OnSelect: |-
+                                      =// チャットルーム一覧のデータ
+                                      Set(
+                                          ChatRoomList,
+                                          Table(
+                                              {
+                                                  RoomId: "room001",
+                                                  RoomType: "group",  // group または direct
+                                                  RoomName: "営業チーム",
+                                                  RoomAvatar: "営",
+                                                  LastMessageId: "msg005",
+                                                  LastMessageText: "資料も準備しておきます。",
+                                                  LastMessageTime: DateValue("2024-11-16") + Time(10,45,0),
+                                                  LastSenderId: "user002",
+                                                  UnreadCount: 3,
+                                                  MemberCount: 5,
+                                                  IsPinned: true,
+                                                  IsArchived: false,
+                                                  CreatedBy: "user001",
+                                                  CreatedTime: DateValue("2024-01-01"),
+                                                  UpdatedTime: DateValue("2024-11-16") + Time(10,45,0),
+                                                  RoomDescription: "営業部のグループチャット",
+                                                  IsTyping: {
+                                                      UserId: "user002",
+                                                      UserName: "鈴木花子",
+                                                      StartTime: Now()
+                                                  }
+                                              },
+                                              {
+                                                  RoomId: "room002",
+                                                  RoomType: "group",
+                                                  RoomName: "プロジェクトA",
+                                                  RoomAvatar: "P",
+                                                  LastMessageId: "msg010",
+                                                  LastMessageText: "進捗報告をお願いします。",
+                                                  LastMessageTime: DateValue("2024-11-16") + Time(9,30,0),
+                                                  LastSenderId: "user005",
+                                                  UnreadCount: 1,
+                                                  MemberCount: 3,
+                                                  IsPinned: false,
+                                                  IsArchived: false,
+                                                  CreatedBy: "user003",
+                                                  CreatedTime: DateValue("2024-02-01"),
+                                                  UpdatedTime: DateValue("2024-11-16") + Time(9,30,0),
+                                                  RoomDescription: "プロジェクトAの進捗管理用",
+                                                  IsTyping: Blank()
+                                              },
+                                              {
+                                                  RoomId: "room003",
+                                                  RoomType: "direct",
+                                                  RoomName: "田中太郎",
+                                                  RoomAvatar: "T",
+                                                  LastMessageId: "msg015",
+                                                  LastMessageText: "承知しました。",
+                                                  LastMessageTime: DateValue("2024-11-16") + Time(9,15,0),
+                                                  LastSenderId: "user001",
+                                                  UnreadCount: 0,
+                                                  MemberCount: 2,
+                                                  IsPinned: false,
+                                                  IsArchived: false,
+                                                  CreatedBy: "system",
+                                                  CreatedTime: DateValue("2024-03-01"),
+                                                  UpdatedTime: DateValue("2024-11-16") + Time(9,15,0),
+                                                  RoomDescription: "",
+                                                  IsTyping: Blank()
+                                              },
+                                              {
+                                                  RoomId: "room004",
+                                                  RoomType: "group",
+                                                  RoomName: "全体連絡",
+                                                  RoomAvatar: "全",
+                                                  LastMessageId: "msg020",
+                                                  LastMessageText: "明日の全体会議について",
+                                                  LastMessageTime: DateValue("2024-11-15") + Time(17,30,0),
+                                                  LastSenderId: "user001",
+                                                  UnreadCount: 0,
+                                                  MemberCount: 15,
+                                                  IsPinned: true,
+                                                  IsArchived: false,
+                                                  CreatedBy: "user001",
+                                                  CreatedTime: DateValue("2024-01-01"),
+                                                  UpdatedTime: DateValue("2024-11-15") + Time(17,30,0),
+                                                  RoomDescription: "全体連絡用チャットルーム",
+                                                  IsTyping: Blank()
+                                              }
+                                          )
+                                      );
+
+                                      // ルームメンバーのデータ
+                                      Set(
+                                          ChatRoomMembers,
+                                          Table(
+                                              {
+                                                  RoomId: "room001",
+                                                  UserId: "user001",
+                                                  UserName: "田中太郎",
+                                                  UserRole: "admin",  // admin, member
+                                                  JoinedTime: DateValue("2024-01-01"),
+                                                  LastReadMessageId: "msg004",
+                                                  MuteNotification: false
+                                              },
+                                              {
+                                                  RoomId: "room001",
+                                                  UserId: "user002",
+                                                  UserName: "鈴木花子",
+                                                  UserRole: "member",
+                                                  JoinedTime: DateValue("2024-01-01"),
+                                                  LastReadMessageId: "msg005",
+                                                  MuteNotification: false
+                                              },
+                                              {
+                                                  RoomId: "room001",
+                                                  UserId: "user003",
+                                                  UserName: "佐藤一郎",
+                                                  UserRole: "member",
+                                                  JoinedTime: DateValue("2024-01-01"),
+                                                  LastReadMessageId: "msg003",
+                                                  MuteNotification: true
+                                              }
+                                          )
+                                      );
+
+                                      // ユーザーのオンライン状態
+                                      Set(
+                                          UserPresence,
+                                          Table(
+                                              {
+                                                  UserId: "user001",
+                                                  IsOnline: true,
+                                                  LastSeen: Now(),
+                                                  DeviceType: "desktop",
+                                                  Status: "available"  // available, busy, away
+                                              },
+                                              {
+                                                  UserId: "user002",
+                                                  IsOnline: true,
+                                                  LastSeen: Now(),
+                                                  DeviceType: "mobile",
+                                                  Status: "busy"
+                                              },
+                                              {
+                                                  UserId: "user003",
+                                                  IsOnline: false,
+                                                  LastSeen: DateValue("2024-11-16") + Time(10,30,0),
+                                                  DeviceType: "desktop",
+                                                  Status: "away"
+                                              }
+                                          )
+                                      );
+                                    Size: =14
+                                    Text: =Office365ユーザー.MyProfileV2().displayName
+                        - HeaderContainer2_3:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =RGBA(255, 255, 255, 1)
+                              FillPortions: =0
+                              Height: =75
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - TextInput2:
+                                  Control: Classic/TextInput@2.3.2
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Center
+                                    BorderThickness: =0
+                                    Default: ="チャットを検索"
+                                    Fill: =Color.WhiteSmoke
+                                    FillPortions: =1
+                                    RadiusBottomLeft: =36
+                                    RadiusBottomRight: =36
+                                    RadiusTopLeft: =36
+                                    RadiusTopRight: =36
+                        - Gallery3:
+                            Control: Gallery@2.15.0
+                            Variant: Vertical
+                            Properties:
+                              Items: =ChatHistory
+                              OnSelect: =Set(Response,JSONControl.Run(ThisItem.'完全パス ').response)
+                              TemplatePadding: =0
+                              TemplateSize: =If(Self.Layout = Layout.Horizontal, Min(96, Self.Width - 60), Min(96, Self.Height - 60))
+                            Children:
+                              - Label4:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    OnSelect: =Select(Parent)
+                                    Text: =ThisItem.名前
+                                    X: =76
+                                    Y: =8
+                              - TextInput3:
+                                  Control: Classic/TextInput@2.3.2
+                                  Properties:
+                                    Align: =Align.Center
+                                    BorderStyle: =BorderStyle.None
+                                    BorderThickness: =0
+                                    Default: =// ThisItem.RoomAvatar
+                                    DisabledColor: =Color.White
+                                    DisabledFill: =App.Theme.Colors.Primary
+                                    DisplayMode: =DisplayMode.Disabled
+                                    Height: =52
+                                    OnSelect: =Select(Parent)
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    RadiusBottomLeft: =Self.Width / 2
+                                    RadiusBottomRight: =Self.Width / 2
+                                    RadiusTopLeft: =Self.Width / 2
+                                    RadiusTopRight: =Self.Width / 2
+                                    Width: =52
+                                    X: =12
+                                    Y: =20
+                              - Label4_1:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AutoHeight: =true
+                                    Color: =Color.Gray
+                                    Height: =24
+                                    OnSelect: =Select(Parent)
+                                    Size: =11
+                                    Text: =// ThisItem.LastMessageText
+                                    Width: =325
+                                    X: =76
+                                    Y: =48
+                  - MainContainer2:
+                      Control: GroupContainer@1.3.0
+                      Variant: AutoLayout
+                      Properties:
+                        Fill: =Color.WhiteSmoke
+                        FillPortions: =7
+                        LayoutDirection: =LayoutDirection.Vertical
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - HeaderContainer2:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =ColorFade(ColorValue("#F5F5F5"),50%)
+                              FillPortions: =0
+                              Height: =Parent.Height * 0.12
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =8
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - Image2_1:
+                                  Control: Image@2.2.3
+                                  Properties:
+                                    Height: =Parent.Height * 0.9
+                                    Image: "=\"data:image/svg+xml;utf8, \" & EncodeUrl(\"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\r\n  \r\n  <circle cx='12' cy='12' r='11' fill='#128C7E'/>\r\n  \r\n  <path\r\n    d='M6 8.5C6 7.67157 6.67157 7 7.5 7H16.5C17.3284 7 18 7.67157 18 8.5V13.5C18 14.3284 17.3284 15 16.5 15H13L12 17L11 15H7.5C6.67157 15 6 14.3284 6 13.5V8.5Z'\r\n    fill='white'\r\n  />\r\n  <circle cx='9' cy='11' r='0.8' fill='#128C7E'/>\r\n  <circle cx='12' cy='11' r='0.8' fill='#128C7E'/>\r\n  <circle cx='15' cy='11' r='0.8' fill='#128C7E'/>\r\n</svg>\")"
+                                    RadiusBottomLeft: =Self.Width
+                                    RadiusBottomRight: =Self.Width
+                                    RadiusTopLeft: =Self.Width
+                                    RadiusTopRight: =Self.Width
+                                    Width: =Self.Height
+                              - Label4_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Bold
+                                    Text: =Gallery3.Selected.名前
+                                    X: =76
+                                    Y: =8
+                        - Gallery2:
+                            Control: Gallery@2.15.0
+                            Variant: VariableHeight
+                            Properties:
+                              Items: =Table(ParseJSON(Response))
+                              TemplatePadding: =4
+                              TemplateSize: '=72  '
+                            Children:
+                              - HtmlText1:
+                                  Control: HtmlViewer@2.1.0
+                                  Properties:
+                                    AutoHeight: =true
+                                    Height: =183
+                                    HtmlText: |-
+                                      =Switch(
+                                          Mod(
+                                              ThisItem.Value.MessageId,
+                                              2
+                                          ),
+                                          1,
+                                          $"<div style='max-width: 70%; margin-bottom: 16px; margin-right: auto; display: flex; gap: 8px;'>
+                                          <div style='width: 32px; height: 32px; background-color: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;'>
+                                              T
+                                          </div>
+                                          <div>
+                                              <div style='font-size: 12px; color: #666666; margin-bottom: 4px;'>
+                                                  {ThisItem.Value.SenderName}
+                                              </div>
+                                              <div style='background-color: #ffffff; padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);'>
+                                                  <div style='margin-bottom: 4px;'>
+                                                      {ThisItem.Value.MessageText}
+                                                  </div>
+                                                  <div style='font-size: 11px; color: #666666; text-align: right;'>
+                                                      00:00
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>",
+                                          0,
+                                          $"<div style='max-width: 70%; margin-bottom: 16px; margin-left: auto; display: flex; flex-direction: row-reverse; gap: 8px;'>
+                                          <div style='width: 32px; height: 32px; background-color: #128C7E; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;'>
+                                              M
+                                          </div>
+                                          <div>
+                                              <div style='font-size: 12px; color: #666666; margin-bottom: 4px; text-align: right;'>
+                                                  自分
+                                              </div>
+                                              <div style='background-color: #dcf8c6; padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);'>
+                                                  <div style='margin-bottom: 4px;'>
+                                                      {ThisItem.Value.MessageText}
+                                                  </div>
+                                                  <div style='font-size: 11px; color: #666666; text-align: right;'>
+                                                      10:32 ✓✓
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>"
+                                      )
+                                    OnSelect: =Select(Parent)
+                                    Width: =Parent.TemplateWidth - 24
+                                    X: =12
+                                    Y: =8
+                        - HeaderContainer2_1:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =ColorFade(ColorValue("#F5F5F5"),50%)
+                              FillPortions: =0
+                              Height: =Parent.Height * 0.12
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =12
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - TextInput2_1:
+                                  Control: Classic/TextInput@2.3.2
+                                  Properties:
+                                    BorderThickness: =0
+                                    Default: ="メッセージを入力"
+                                    FillPortions: =1
+                                    Height: =52
+                                    RadiusBottomLeft: =36
+                                    RadiusBottomRight: =36
+                                    RadiusTopLeft: =36
+                                    RadiusTopRight: =36
+                              - ButtonCanvas1:
+                                  Control: Button@0.0.45
+                                  Properties:
+                                    Height: =52
+                                    Icon: ="Chat"
+                                    Text: ="送信"
