@@ -1,292 +1,318 @@
-<div style="margin-bottom: 24px; position: relative;">
-  <label for="multilineText" style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #2b2d42;">折り返し可能なテキストエリア</label>
-  <textarea 
-    id="multilineText" 
-    style="width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; background-color: #ffffff; color: #2b2d42; min-height: 80px; word-wrap: break-word; overflow-wrap: break-word; resize: vertical;"
-  >ここに長いテキストを値として表示します。このテキストは自動的に折り返されて表示されます。とても長い文章でも問題なく表示できます。ユーザーは必要に応じてこの内容を編集することができます。</textarea>
-</div>
-
-
-あなたは金融機関の承認ワークフローシステムの上級AIアシスタントです。
-申請区分に基づいて、実務レベルの詳細な申請内容を生成してください。
-
-【申請区分の定義】
-A: 新規口座開設申請
-   - 個人・法人の新規口座開設に関する申請
-   - 完了希望日: 申請日から7日後
-   - 重点: 本人確認書類、反社チェック、KYC手続き
-
-B: 融資・与信申請
-   - 融資、クレジットライン設定等の与信関連申請
-   - 完了希望日: 申請日から14日後
-   - 重点: 財務状況、担保評価、信用格付、債務償還能力
-
-C: システム・IT関連申請
-   - システム変更、新機能導入等のIT関連申請
-   - 完了希望日: 申請日から21日後
-   - 重点: セキュリティ、運用体制、システム影響範囲
-
-D: 規制対応・コンプライアンス申請
-   - 法令対応、監査対応等のコンプライアンス関連申請
-   - 完了希望日: 申請日から30日後
-   - 重点: 法的要件、リスク評価、監査対応体制
-
-【重要】以下の出力項目は、実際の金融機関業務で使用される水準の詳細度で作成してください：
-
-1. richTextComment: HTML形式で構造化された重要事項サマリ
-   - <h3>, <h4>タグで見出し構造化
-   - <ul>, <li>で箇条書き活用
-   - <strong>, <span style='color:red;font-weight:bold;'>で重要箇所強調
-   - リスク項目、チェックポイント、注意事項を明記
-   - 絵文字（🔍📋⚠️💰📊等）を使用して視認性向上
-
-2. comment1: 使用条件の詳細記載
-   - 複数段落での条件説明（最低300文字以上）
-   - 具体的な数値、期間、制限事項を含む
-   - 条件違反時の措置を明記
-   - 申請区分に応じた専門的条件設定
-
-3. comment2: 事前稟議の詳細状況
-   - 有無だけでなく、具体的な稟議内容と承認状況（最低250文字以上）
-   - 稟議番号、承認日、承認者情報を含む
-   - 関連する会議体、承認者情報の詳細
-   - 特記事項や条件付き承認の場合はその詳細
-
-4. comment3: 申し送り事項の詳細
-   - 次工程への具体的指示（最低400文字以上）
-   - 関係部署への連絡事項を部署別に整理
-   - フォローアップ項目とスケジュール
-   - 担当者情報と緊急時連絡先
-
-【日付計算ルール】
-- completionDate: 申請日 + 申請区分別の標準日数
-- endDate: completionDateから2年後（YYYY-MM-DD形式）
-
-【出力形式】
-- JSON形式で回答してください
-- 金融機関の実務に即した内容にしてください
-- コンプライアンスを重視した文言を使用してください
-- 日付は YYYY-MM-DD 形式で出力してください
-- すべてのテキスト項目は実務で使用される詳細レベルで記載してください
-
-【入力パラメータ】
-申請区分: {申請区分}
-申請日: {申請日}
-
-【出力JSON構造】
-{
-  "completionDate": "YYYY-MM-DD",
-  "endDate": "YYYY-MM-DD",
-  "richTextComment": "HTML形式の重要事項サマリ（見出し・箇条書き・強調を含む）",
-  "comment1": "使用条件の詳細（複数段落、具体的数値・期間・制限事項含む）",
-  "comment2": "事前稟議の詳細状況（稟議番号・承認者・会議体情報含む）",
-  "comment3": "申し送り事項の詳細（次工程指示・関係部署連絡・フォローアップ含む）"
-}
-
-【品質要件】
-- 各コメント項目は金融機関の実際の業務文書レベルの詳細度
-- 専門用語を適切に使用し、業界の慣例に従った表現
-- リスク管理、コンプライアンス観点を必ず含める
-- 具体的な数値、期間、手続き名称を含める
-- 実在しそうな担当者名、部署名、連絡先を設定（但し架空）
-
-上記の要件に基づいて、申請区分に応じた詳細な業務レベルの内容を生成してください。
-
-# 金融機関向け承認ワークフローAI Builder 完全プロンプト（申請書類名称追加版）
-
-## AI Builderカスタムプロンプト
-
-```
-あなたは金融機関の承認ワークフローシステムの上級AIアシスタントです。
-申請区分に基づいて、実務レベルの詳細な申請内容を生成してください。
-
-【申請区分の定義】
-A: 新規口座開設申請
-   - 個人・法人の新規口座開設に関する申請
-   - 完了希望日: 申請日から7日後
-   - 重点: 本人確認書類、反社チェック、KYC手続き
-   - 書類名称: 口座開設関連の正式書類名
-
-B: 融資・与信申請
-   - 融資、クレジットライン設定等の与信関連申請
-   - 完了希望日: 申請日から14日後
-   - 重点: 財務状況、担保評価、信用格付、債務償還能力
-   - 書類名称: 融資・与信関連の正式書類名
-
-C: システム・IT関連申請
-   - システム変更、新機能導入等のIT関連申請
-   - 完了希望日: 申請日から21日後
-   - 重点: セキュリティ、運用体制、システム影響範囲
-   - 書類名称: IT・システム関連の正式書類名
-
-D: 規制対応・コンプライアンス申請
-   - 法令対応、監査対応等のコンプライアンス関連申請
-   - 完了希望日: 申請日から30日後
-   - 重点: 法的要件、リスク評価、監査対応体制
-   - 書類名称: コンプライアンス・規制対応関連の正式書類名
-
-【申請書類名称の要件】
-- 金融機関で実際に使用される正式な書類名称形式
-- 申請区分に応じた専門的で具体的な名称
-- 年度、管理番号、版数等を含む完全な書式
-- 例: 「令和7年度 新規普通預金口座開設申請書（個人・法人共通）Ver.2.1」
-
-【重要】以下の出力項目は、実際の金融機関業務で使用される水準の詳細度で作成してください：
-
-1. documentName: 申請書類の正式名称
-   - 年度、版数、対象範囲を含む完全な書類名
-   - 金融機関の書類命名規則に準拠した形式
-   - 申請区分に応じた専門的な書類名称
-
-2. richTextComment: HTML形式で構造化された重要事項サマリ
-   - <h3>, <h4>タグで見出し構造化
-   - <ul>, <li>で箇条書き活用
-   - <strong>, <span style='color:red;font-weight:bold;'>で重要箇所強調
-   - リスク項目、チェックポイント、注意事項を明記
-   - 絵文字（🔍📋⚠️💰📊等）を使用して視認性向上
-
-3. comment1: 使用条件の詳細記載
-   - 複数段落での条件説明（最低300文字以上）
-   - 具体的な数値、期間、制限事項を含む
-   - 条件違反時の措置を明記
-   - 申請区分に応じた専門的条件設定
-
-4. comment2: 事前稟議の詳細状況
-   - 有無だけでなく、具体的な稟議内容と承認状況（最低250文字以上）
-   - 稟議番号、承認日、承認者情報を含む
-   - 関連する会議体、承認者情報の詳細
-   - 特記事項や条件付き承認の場合はその詳細
-
-5. comment3: 申し送り事項の詳細
-   - 次工程への具体的指示（最低400文字以上）
-   - 関係部署への連絡事項を部署別に整理
-   - フォローアップ項目とスケジュール
-   - 担当者情報と緊急時連絡先
-
-【日付計算ルール】
-- completionDate: 申請日 + 申請区分別の標準日数
-- endDate: completionDateから2年後（YYYY-MM-DD形式）
-
-【申請区分別書類名称例】
-A: 「令和7年度 新規口座開設申請書（普通預金・当座預金対応）Ver.3.2」
-B: 「令和7年度 事業資金融資申込書（運転資金・設備資金共通）Ver.4.1」
-C: 「令和7年度 情報システム変更申請書（セキュリティ審査対応版）Ver.2.8」
-D: 「令和7年度 法令等遵守対応申請書（監査・検査対応版）Ver.1.9」
-
-【出力形式】
-- JSON形式で回答してください
-- 金融機関の実務に即した内容にしてください
-- コンプライアンスを重視した文言を使用してください
-- 日付は YYYY-MM-DD 形式で出力してください
-- すべてのテキスト項目は実務で使用される詳細レベルで記載してください
-
-【入力パラメータ】
-申請区分: {申請区分}
-申請日: {申請日}
-
-【出力JSON構造】
-{
-  "documentName": "申請書類の正式名称（年度・版数含む完全名称）",
-  "completionDate": "YYYY-MM-DD",
-  "endDate": "YYYY-MM-DD",
-  "richTextComment": "HTML形式の重要事項サマリ（見出し・箇条書き・強調を含む）",
-  "comment1": "使用条件の詳細（複数段落、具体的数値・期間・制限事項含む）",
-  "comment2": "事前稟議の詳細状況（稟議番号・承認者・会議体情報含む）",
-  "comment3": "申し送り事項の詳細（次工程指示・関係部署連絡・フォローアップ含む）"
-}
-
-【品質要件】
-- 各コメント項目は金融機関の実際の業務文書レベルの詳細度
-- 専門用語を適切に使用し、業界の慣例に従った表現
-- リスク管理、コンプライアンス観点を必ず含める
-- 具体的な数値、期間、手続き名称を含める
-- 実在しそうな担当者名、部署名、連絡先を設定（但し架空）
-- 書類名称は金融機関の実際の命名規則に準拠
-
-上記の要件に基づいて、申請区分に応じた詳細な業務レベルの内容を生成してください。
-```
-
-## 申請区分別の書類名称例
-
-### 申請区分A（新規口座開設）
-```
-"documentName": "令和7年度 新規普通預金口座開設申請書（個人・法人共通版）Ver.3.2"
-"documentName": "令和7年度 当座預金口座開設申請書（事業者専用）Ver.2.7"
-"documentName": "令和7年度 総合口座開設申請書（定期預金連動型）Ver.4.1"
-```
-
-### 申請区分B（融資・与信）
-```
-"documentName": "令和7年度 事業資金融資申込書（運転資金・設備資金対応）Ver.5.3"
-"documentName": "令和7年度 根保証付当座貸越申請書（極度額設定型）Ver.3.8"
-"documentName": "令和7年度 住宅ローン事前審査申込書（フラット35対応）Ver.2.4"
-```
-
-### 申請区分C（システム・IT）
-```
-"documentName": "令和7年度 基幹システム変更申請書（セキュリティ審査必須版）Ver.6.2"
-"documentName": "令和7年度 新規システム導入申請書（外部連携対応版）Ver.3.5"
-"documentName": "令和7年度 ネットワーク環境変更申請書（クラウド対応版）Ver.4.1"
-```
-
-### 申請区分D（規制対応・コンプライアンス）
-```
-"documentName": "令和7年度 法令等遵守体制整備申請書（金融検査対応版）Ver.2.9"
-"documentName": "令和7年度 内部監査対応改善計画書（PDCA管理版）Ver.1.7"
-"documentName": "令和7年度 マネロン・テロ資金供与対策強化申請書（FATF対応版）Ver.3.4"
-```
-
-## Power Apps側での実装コード（更新版）
-
-```javascript
-// AI Builder呼び出し処理
-Set(aiResponse, 
-    'AI Builder Custom Prompt'.Predict(
-        {
-            申請区分: DropDown1.Selected.Value,
-            申請日: Text(Today(), "yyyy-mm-dd")
-        }
-    )
-);
-
-// JSON解析とフォーム自動入力
-Set(parsedData, ParseJSON(aiResponse.response));
-
-// 書類名称の設定
-Set(DocumentNameText, parsedData.documentName);
-
-// 日付フィールドの設定
-UpdateContext({
-    CompletionDate: DateValue(parsedData.completionDate),
-    EndDate: DateValue(parsedData.endDate)
-});
-
-// リッチテキスト用HTMLの調整
-Set(formattedHtml, 
-    Substitute(
-        Substitute(
-            Substitute(
-                parsedData.richTextComment,
-                "<h3>", "<div style='font-size:18px;font-weight:bold;color:#1f4e79;margin:10px 0;'>"
-            ),
-            "</h3>", "</div>"
-        ),
-        "<h4>", "<div style='font-size:16px;font-weight:bold;color:#2e5d8a;margin:8px 0;'>"
-    )
-);
-
-// 複数行テキストボックスの高さ自動調整
-UpdateContext({
-    Comment1Height: Max(200, Len(parsedData.comment1) * 1.2 + 50),
-    Comment2Height: Max(200, Len(parsedData.comment2) * 1.2 + 50),
-    Comment3Height: Max(250, Len(parsedData.comment3) * 1.2 + 50)
-});
-
-// フォームフィールドへの値設定
-Set(RichTextComment, formattedHtml);
-Set(Comment1Text, parsedData.comment1);
-Set(Comment2Text, parsedData.comment2);
-Set(Comment3Text, parsedData.comment3);
-```
-
-この追加により、申請書類名称も含めて完全な申請フォームの自動入力が実現され、より実用的でリアルなデモンストレーションが可能になります。
+Screens:
+  Chat Screen:
+    Children:
+      - conMainScreen:
+          Control: GroupContainer@1.3.0
+          Variant: AutoLayout
+          Properties:
+            Fill: =RGBA(245, 245, 245, 1)
+            Height: =Parent.Height
+            LayoutAlignItems: =LayoutAlignItems.Stretch
+            LayoutDirection: =LayoutDirection.Vertical
+            Width: =Parent.Width
+          Children:
+            - conChatLayout:
+                Control: GroupContainer@1.3.0
+                Variant: AutoLayout
+                Properties:
+                  Fill: =Color.White
+                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutWrap: =true
+                Children:
+                  - conChatListSidebar:
+                      Control: GroupContainer@1.3.0
+                      Variant: AutoLayout
+                      Properties:
+                        Fill: =RGBA(255, 255, 255, 1)
+                        FillPortions: =3
+                        LayoutDirection: =LayoutDirection.Vertical
+                      Children:
+                        - conUserProfileHeader:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =Color.WhiteSmoke
+                              FillPortions: =0
+                              Height: =75
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =12
+                              PaddingBottom: =12
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              PaddingTop: =12
+                            Children:
+                              - imgUserProfile:
+                                  Control: Image@2.2.3
+                                  Properties:
+                                    Height: =Parent.Height * 0.8
+                                    Image: =User().Image
+                                    RadiusBottomLeft: =Self.Height
+                                    RadiusBottomRight: =Self.Height
+                                    RadiusTopLeft: =Self.Height
+                                    RadiusTopRight: =Self.Height
+                                    Width: =Self.Height
+                              - lblUserName:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FillPortions: =1
+                                    OnSelect: =
+                                    Size: =16
+                                    Text: =Office365ユーザー.MyProfileV2().displayName
+                        - conNewChatHeader:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =RGBA(255, 255, 255, 1)
+                              FillPortions: =0
+                              Height: =75
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =12
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - icoNewChat:
+                                  Control: Classic/Icon@2.5.0
+                                  Properties:
+                                    Height: =32
+                                    Icon: =Icon.Add
+                                    OnSelect: |-
+                                      =UpdateContext({locMessageID: ""});
+                                      Clear(colChat);
+                                      UpdateContext({locFilter: false});
+                                      UpdateContext({locFilter: true});
+                                    Width: =32
+                              - lblicoNewChat:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AutoHeight: =true
+                                    FillPortions: =1
+                                    OnSelect: =Select(icoNewChat);
+                                    Text: =$"新しいチャット"
+                                    X: =76
+                                    Y: =8
+                        - galChatList:
+                            Control: Gallery@2.15.0
+                            Variant: Vertical
+                            Properties:
+                              Items: =Filter('sp-chatlib',locFilter)
+                              OnSelect: |
+                                =UpdateContext({locMessageID: ThisItem.MessageID});
+                                ClearCollect(
+                                    colChat,
+                                    ForAll(
+                                        Table(ParseJSON('get-json-content'.Run(locMessageID).response).Log) As Result,
+                                        {
+                                            MessageIndex: Value(Result.Value.MessageIndex),
+                                            MessageText: Text(Result.Value.MessageText),
+                                            SenderName: Text(Result.Value.SenderName),
+                                            TimeStamp: DateTimeValue(Result.Value.TimeStamp)
+                                        }
+                                    )
+                                );
+                              TemplateFill: |-
+                                =If(
+                                    ThisItem.MessageID = locMessageID,
+                                    App.Theme.Colors.Lighter80,
+                                    RGBA(
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    )
+                                )
+                              TemplatePadding: =0
+                              TemplateSize: =If(Self.Layout = Layout.Horizontal, Min(96, Self.Width - 60), Min(96, Self.Height - 60))
+                            Children:
+                              - lblChatTitle:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: |-
+                                      =If(
+                                          ThisItem.MessageID = locMessageID,
+                                          FontWeight.Semibold,
+                                          FontWeight.Normal
+                                      )
+                                    OnSelect: =Select(Parent)
+                                    Size: =12
+                                    Text: =ThisItem.Subject
+                                    Width: =240
+                                    X: =76
+                                    Y: =8
+                              - txtAvatar:
+                                  Control: Classic/TextInput@2.3.2
+                                  Properties:
+                                    Align: =Align.Center
+                                    Default: =Left(ThisItem.Subject,1)
+                                    DisabledColor: |-
+                                      =If(
+                                          ThisItem.MessageID = locMessageID,
+                                          Color.White,
+                                          Color.Black
+                                      )
+                                    DisabledFill: |-
+                                      =If(
+                                          ThisItem.MessageID = locMessageID,
+                                          App.Theme.Colors.Darker40,
+                                          Color.White
+                                      )
+                                    DisplayMode: =DisplayMode.Disabled
+                                    Height: =52
+                                    OnSelect: =Select(Parent)
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Width: =52
+                                    X: =12
+                                    Y: =20
+                              - lblCreatedTime:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AutoHeight: =true
+                                    Height: =24
+                                    OnSelect: =Select(Parent)
+                                    Text: =DateTimeValue(ThisItem.CreatedTime)
+                                    Width: =325
+                                    X: =76
+                                    Y: =48
+                  - conChatMain:
+                      Control: GroupContainer@1.3.0
+                      Variant: AutoLayout
+                      Properties:
+                        Fill: =Color.WhiteSmoke
+                        FillPortions: =7
+                        LayoutDirection: =LayoutDirection.Vertical
+                      Children:
+                        - conChatHeader:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =ColorFade(ColorValue("#F5F5F5"),50%)
+                              FillPortions: =0
+                              Height: =Parent.Height * 0.12
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =8
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - icoChatHeader:
+                                  Control: Image@2.2.3
+                                  Properties:
+                                    Height: =Parent.Height * 0.9
+                                    Image: "=\"data:image/svg+xml;utf8, \" & EncodeUrl(\"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\r\n  \r\n  <circle cx='12' cy='12' r='11' fill='#128C7E'/>\r\n  \r\n  <path\r\n    d='M6 8.5C6 7.67157 6.67157 7 7.5 7H16.5C17.3284 7 18 7.67157 18 8.5V13.5C18 14.3284 17.3284 15 16.5 15H13L12 17L11 15H7.5C6.67157 15 6 14.3284 6 13.5V8.5Z'\r\n    fill='white'\r\n  />\r\n  <circle cx='9' cy='11' r='0.8' fill='#128C7E'/>\r\n  <circle cx='12' cy='11' r='0.8' fill='#128C7E'/>\r\n  <circle cx='15' cy='11' r='0.8' fill='#128C7E'/>\r\n</svg>\")"
+                                    OnSelect: =Clear(colChat);
+                                    Width: =Self.Height
+                              - lblChatHeader:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Center
+                                    AutoHeight: =true
+                                    FillPortions: =1
+                                    Text: =LookUp('sp-chatlib',MessageID = locMessageID).Subject
+                                    Visible: =!IsBlank(locMessageID)
+                                    X: =76
+                                    Y: =8
+                        - galMessages:
+                            Control: Gallery@2.15.0
+                            Variant: VariableHeight
+                            Properties:
+                              Items: =colChat
+                              TemplatePadding: =4
+                              TemplateSize: '=72  '
+                            Children:
+                              - htmlMessageContent:
+                                  Control: HtmlViewer@2.1.0
+                                  Properties:
+                                    AutoHeight: =true
+                                    Font: =Font.'Open Sans'
+                                    Height: =72
+                                    HtmlText: |-
+                                      =With(
+                                          {
+                                              avatarStyle: "width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;",
+                                              messageWrapperBase: "max-width: 70%; margin-bottom: 16px; display: flex; gap: 8px;",
+                                              messageBubbleBase: "padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);",
+                                              nameStyle: "font-size: 12px; color: #666666; margin-bottom: 4px;",
+                                              timeStyle: "font-size: 11px; color: #666666; text-align: right;"
+                                          },
+                                          Switch(
+                                              Mod(ThisItem.MessageIndex, 2),
+                                              0,
+                                              $"<div style='{messageWrapperBase} margin-right: auto;'>
+                                                  <div style='{avatarStyle} background-color: #e0e0e0;'>
+                                                      {Left(ThisItem.SenderName, 2)}
+                                                  </div>
+                                                  <div>
+                                                      <div style='{nameStyle}'>{ThisItem.SenderName}</div>
+                                                      <div style='{messageBubbleBase} background-color: #ffffff;'>
+                                                          <div style='margin-bottom: 4px;'>{ThisItem.MessageText}</div>
+                                                          <div style='{timeStyle}'>{ThisItem.TimeStamp}</div>
+                                                      </div>
+                                                  </div>
+                                              </div>",
+                                              1,
+                                              $"<div style='{messageWrapperBase} margin-left: auto; flex-direction: row-reverse;'>
+                                                  <div style='{avatarStyle} background-color: #128C7E; color: white;'>Me</div>
+                                                  <div>
+                                                      <div style='{nameStyle} text-align: right;'>自分</div>
+                                                      <div style='{messageBubbleBase} background-color: #dcf8c6;'>
+                                                          <div style='margin-bottom: 4px;'>{ThisItem.MessageText}</div>
+                                                          <div style='{timeStyle}'>{ThisItem.TimeStamp}</div>
+                                                      </div>
+                                                  </div>
+                                              </div>"
+                                          )
+                                      )
+                                    OnSelect: =Select(Parent)
+                                    Width: =Parent.TemplateWidth - 24
+                                    X: =12
+                        - conMessageInput:
+                            Control: GroupContainer@1.3.0
+                            Variant: AutoLayout
+                            Properties:
+                              Fill: =ColorFade(ColorValue("#F5F5F5"),50%)
+                              FillPortions: =0
+                              Height: =Parent.Height * 0.12
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =12
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - inpMessageText:
+                                  Control: Classic/TextInput@2.3.2
+                                  Properties:
+                                    BorderThickness: =1
+                                    Default: =
+                                    FillPortions: =1
+                                    Height: =52
+                                    RadiusBottomLeft: =8
+                                    RadiusBottomRight: =8
+                                    RadiusTopLeft: =8
+                                    RadiusTopRight: =8
+                              - btnSendMessage:
+                                  Control: Button@0.0.45
+                                  Properties:
+                                    BorderRadius: =8
+                                    Height: =52
+                                    Icon: ="Chat"
+                                    Layout: ='ButtonCanvas.Layout'.IconOnly
+                                    OnSelect: "=If(\n    CountRows(colChat) = 0,\n    // Me\n    ClearCollect(\n        colChat,\n        {\n            MessageIndex: 1,\n            SenderName: Office365ユーザー.MyProfileV2().displayName,\n            MessageText: inpMessageText.Text,\n            TimeStamp: Now()\n        }\n    );\n    Collect(\n        colChat,\n        {\n            MessageIndex: (CountRows(colChat) + 1),\n            SenderName: \"AI Builder\",\n            MessageText: 'AI Reply'.Predict(inpMessageText.Text).Text,\n            TimeStamp: Now()\n        }\n    );\n    UpdateContext({locAiResponse: 'Custom-prompt-response'.Predict(inpMessageText.Text).StructuredOutput});\n    ,\n    Collect(\n        colChat,\n        {\n            MessageIndex: (CountRows(colChat) + 1),\n            SenderName: Office365ユーザー.MyProfileV2().displayName,\n            MessageText: inpMessageText.Text,\n            TimeStamp: Now()\n        }\n    );\n    Collect(\n        colChat,\n        {\n            MessageIndex: (CountRows(colChat) + 1),\n            SenderName: \"AI Builder\",\n            MessageText: 'AI Reply'.Predict(inpMessageText.Text).Text,\n            TimeStamp: Now()\n        }\n    );\n    \n);\nWith(\n    {\n        FirstPost: First(colChat),\n        LastPost: Last(colChat)\n    },\n    UpdateContext(\n        {\n            spMetaData: {\n                MessageID: Coalesce(\n                    locMessageID,\n                    Text(GUID())\n                ),\n                LastMessageText: LastPost.MessageText,\n                LastMessageTime: LastPost.TimeStamp,\n                LastSender: LastPost.SenderName,\n                MessageCount: CountRows(colChat),\n                CreateBy: FirstPost.SenderName,\n                CreatedTime: FirstPost.TimeStamp,\n                UpdatedTime: LastPost.TimeStamp,\n                Subject: Coalesce(\n                    locAiResponse.response,\n                    galChatList.Selected.Subject\n                ),\n                Fill: Coalesce(\n                    locAiResponse.fill,\n                    galChatList.Selected.Fill\n                ),\n                FontColor: Coalesce(\n                    locAiResponse.fontcolor,\n                    galChatList.Selected.FontColor\n                )\n            }\n        }\n    )\n);\nUpdateContext(\n    {\n        locMessageID: 'post-json-chat'.Run(\n            JSON(spMetaData),\n            JSON(\n                {Log: Table(colChat)},\n                JSONFormat.Compact\n            )\n        ).messageid\n    }\n);\nReset(inpMessageText);\nUpdateContext({locFilter: false});\nUpdateContext({locFilter: true});\n"
+                                    Text: ="送信"
+                                    Width: =52
