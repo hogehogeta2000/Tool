@@ -56,31 +56,339 @@ def create_branch_master():
 
 
 def create_procedure_master():
-    """手続きマスタデータを生成"""
+    """
+    金融機関の実務に基づいた拡張版手続きマスタデータを生成
+    処理時間のばらつきを大きくし、実際の業務を反映
+    """
     procedures = [
-        # 住所変更系
-        {'手続き名称': '住所変更（通常）', '大分類': '顧客情報変更', 
-         '中分類': '住所変更', '標準処理時間_分': 15, '難易度': '低'},
-        {'手続き名称': '住所変更（海外転居）', '大分類': '顧客情報変更', 
-         '中分類': '住所変更', '標準処理時間_分': 30, '難易度': '高'},
+        # === 口座開設関連 ===
+        {
+            '手続き名称': '普通預金口座開設（個人）',
+            '大分類': '口座開設',
+            '中分類': '普通預金',
+            '標準処理時間_分': 30,
+            '難易度': '中',
+            '必要書類数': 3,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '定期預金口座開設',
+            '大分類': '口座開設',
+            '中分類': '定期預金',
+            '標準処理時間_分': 25,
+            '難易度': '低',
+            '必要書類数': 2,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '外貨預金口座開設',
+            '大分類': '口座開設',
+            '中分類': '外貨預金',
+            '標準処理時間_分': 45,
+            '難易度': '高',
+            '必要書類数': 4,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
         
-        # 氏名変更系
-        {'手続き名称': '氏名変更（結婚）', '大分類': '顧客情報変更', 
-         '中分類': '氏名変更', '標準処理時間_分': 20, '難易度': '中'},
-        {'手続き名称': '氏名変更（離婚）', '大分類': '顧客情報変更', 
-         '中分類': '氏名変更', '標準処理時間_分': 20, '難易度': '中'},
+        # === 顧客情報変更 ===
+        {
+            '手続き名称': '住所変更（通常）',
+            '大分類': '顧客情報変更',
+            '中分類': '住所変更',
+            '標準処理時間_分': 15,
+            '難易度': '低',
+            '必要書類数': 2,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '住所変更（海外転居）',
+            '大分類': '顧客情報変更',
+            '中分類': '住所変更',
+            '標準処理時間_分': 35,
+            '難易度': '高',
+            '必要書類数': 5,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '氏名変更（結婚）',
+            '大分類': '顧客情報変更',
+            '中分類': '氏名変更',
+            '標準処理時間_分': 20,
+            '難易度': '中',
+            '必要書類数': 3,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '氏名変更（離婚）',
+            '大分類': '顧客情報変更',
+            '中分類': '氏名変更',
+            '標準処理時間_分': 20,
+            '難易度': '中',
+            '必要書類数': 3,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '電話番号・メールアドレス変更',
+            '大分類': '顧客情報変更',
+            '中分類': '連絡先変更',
+            '標準処理時間_分': 8,
+            '難易度': '低',
+            '必要書類数': 1,
+            '本人確認レベル': '簡易',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '勤務先変更',
+            '大分類': '顧客情報変更',
+            '中分類': '属性変更',
+            '標準処理時間_分': 12,
+            '難易度': '低',
+            '必要書類数': 2,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
         
-        # その他手続き
-        {'手続き名称': 'キャッシュカード再発行', '大分類': 'カード関連', 
-         '中分類': '再発行', '標準処理時間_分': 10, '難易度': '低'},
-        {'手続き名称': '口座解約', '大分類': '口座管理', 
-         '中分類': '解約', '標準処理時間_分': 25, '難易度': '中'},
-        {'手続き名称': '相続手続き', '大分類': '相続', 
-         '中分類': '名義変更', '標準処理時間_分': 60, '難易度': '高'},
+        # === カード関連 ===
+        {
+            '手続き名称': 'キャッシュカード新規発行',
+            '大分類': 'カード関連',
+            '中分類': '新規発行',
+            '標準処理時間_分': 15,
+            '難易度': '低',
+            '必要書類数': 1,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': 'キャッシュカード再発行（紛失）',
+            '大分類': 'カード関連',
+            '中分類': '再発行',
+            '標準処理時間_分': 10,
+            '難易度': '低',
+            '必要書類数': 2,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': 'キャッシュカード暗証番号変更',
+            '大分類': 'カード関連',
+            '中分類': '暗証番号',
+            '標準処理時間_分': 5,
+            '難易度': '低',
+            '必要書類数': 1,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': 'クレジットカード申込',
+            '大分類': 'カード関連',
+            '中分類': 'クレジット',
+            '標準処理時間_分': 40,
+            '難易度': '高',
+            '必要書類数': 5,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        
+        # === 振込・送金 ===
+        {
+            '手続き名称': '振込（窓口・高額）',
+            '大分類': '振込・送金',
+            '中分類': '国内振込',
+            '標準処理時間_分': 10,
+            '難易度': '低',
+            '必要書類数': 1,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '海外送金',
+            '大分類': '振込・送金',
+            '中分類': '海外送金',
+            '標準処理時間_分': 50,
+            '難易度': '高',
+            '必要書類数': 6,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '自動振込設定・変更',
+            '大分類': '振込・送金',
+            '中分類': '自動振込',
+            '標準処理時間_分': 18,
+            '難易度': '中',
+            '必要書類数': 2,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        
+        # === 各種証明書 ===
+        {
+            '手続き名称': '残高証明書発行',
+            '大分類': '証明書発行',
+            '中分類': '残高証明',
+            '標準処理時間_分': 10,
+            '難易度': '低',
+            '必要書類数': 1,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '取引明細発行（過去5年分）',
+            '大分類': '証明書発行',
+            '中分類': '取引明細',
+            '標準処理時間_分': 25,
+            '難易度': '中',
+            '必要書類数': 2,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '融資証明書発行',
+            '大分類': '証明書発行',
+            '中分類': '融資証明',
+            '標準処理時間_分': 20,
+            '難易度': '中',
+            '必要書類数': 3,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        
+        # === ローン関連 ===
+        {
+            '手続き名称': '住宅ローン相談・仮審査',
+            '大分類': 'ローン関連',
+            '中分類': '住宅ローン',
+            '標準処理時間_分': 90,
+            '難易度': '高',
+            '必要書類数': 8,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': 'カードローン申込',
+            '大分類': 'ローン関連',
+            '中分類': 'カードローン',
+            '標準処理時間_分': 35,
+            '難易度': '中',
+            '必要書類数': 4,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': 'ローン繰上返済',
+            '大分類': 'ローン関連',
+            '中分類': '返済手続き',
+            '標準処理時間_分': 30,
+            '難易度': '中',
+            '必要書類数': 3,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        
+        # === 相続・贈与 ===
+        {
+            '手続き名称': '相続手続き（預金）',
+            '大分類': '相続・贈与',
+            '中分類': '相続',
+            '標準処理時間_分': 120,
+            '難易度': '高',
+            '必要書類数': 10,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 0
+        },
+        {
+            '手続き名称': '贈与手続き',
+            '大分類': '相続・贈与',
+            '中分類': '贈与',
+            '標準処理時間_分': 60,
+            '難易度': '高',
+            '必要書類数': 6,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 0
+        },
+        
+        # === その他手続き ===
+        {
+            '手続き名称': '口座解約',
+            '大分類': '口座管理',
+            '中分類': '解約',
+            '標準処理時間_分': 25,
+            '難易度': '中',
+            '必要書類数': 2,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '通帳再発行',
+            '大分類': 'その他手続き',
+            '中分類': '再発行',
+            '標準処理時間_分': 12,
+            '難易度': '低',
+            '必要書類数': 2,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        },
+        {
+            '手続き名称': '印鑑変更',
+            '大分類': 'その他手続き',
+            '中分類': '印鑑',
+            '標準処理時間_分': 15,
+            '難易度': '中',
+            '必要書類数': 3,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 0
+        },
+        {
+            '手続き名称': '貸金庫契約',
+            '大分類': 'その他手続き',
+            '中分類': '貸金庫',
+            '標準処理時間_分': 40,
+            '難易度': '中',
+            '必要書類数': 4,
+            '本人確認レベル': '厳格',
+            'システム処理有無': 0
+        },
+        {
+            '手続き名称': 'インターネットバンキング初期設定',
+            '大分類': 'その他手続き',
+            '中分類': 'ネットバンキング',
+            '標準処理時間_分': 20,
+            '難易度': '中',
+            '必要書類数': 1,
+            '本人確認レベル': '通常',
+            'システム処理有無': 1
+        }
     ]
     
     df = pd.DataFrame(procedures)
     df['手続きID'] = range(1, len(df) + 1)
+    
+    # 手続きコードを生成（大分類の頭文字 + 連番）
+    category_codes = {
+        '口座開設': 'ACC',
+        '顧客情報変更': 'CUS',
+        'カード関連': 'CRD',
+        '振込・送金': 'TRF',
+        '証明書発行': 'CRT',
+        'ローン関連': 'LON',
+        '相続・贈与': 'INH',
+        '口座管理': 'MGT',
+        'その他手続き': 'OTH'
+    }
+    
+    df['手続きコード'] = df.apply(
+        lambda row: f"{category_codes.get(row['大分類'], 'OTH')}{str(row['手続きID']).zfill(3)}", 
+        axis=1
+    )
+    
     return df
 
 
@@ -203,7 +511,6 @@ def create_employee_master(branches_df):
     
     return pd.DataFrame(employees)
 
-
 def add_special_patterns_to_employees(employees_df, branches_df):
     """デモ用に特定のパターンを従業員データに追加"""
     # パターン1: 東京中央支店に新人を多く配置（処理時間が長い原因）
@@ -221,7 +528,8 @@ def add_special_patterns_to_employees(employees_df, branches_df):
             employees_df.loc[idx, 'スキルレベル'] = '初級'
             employees_df.loc[idx, '研修受講回数'] = random.randint(1, 3)
             # 入社年月も調整
-            hire_date = datetime.now() - timedelta(days=employees_df.loc[idx, '経験年数'] * 365)
+            # `int()`で明示的に整数型に変換する
+            hire_date = datetime.now() - timedelta(days=int(employees_df.loc[idx, '経験年数']) * 365)
             employees_df.loc[idx, '入社年月'] = hire_date.strftime('%Y-%m-%d')
     
     # パターン2: 大阪梅田支店にベテランを多く配置（処理時間が短い原因）
@@ -239,7 +547,8 @@ def add_special_patterns_to_employees(employees_df, branches_df):
             employees_df.loc[idx, 'スキルレベル'] = '上級'
             employees_df.loc[idx, '研修受講回数'] = employees_df.loc[idx, '経験年数'] + random.randint(5, 10)
             # 入社年月も調整
-            hire_date = datetime.now() - timedelta(days=employees_df.loc[idx, '経験年数'] * 365)
+            # `int()`で明示的に整数型に変換する
+            hire_date = datetime.now() - timedelta(days=int(employees_df.loc[idx, '経験年数']) * 365)
             employees_df.loc[idx, '入社年月'] = hire_date.strftime('%Y-%m-%d')
         
         # パターン3: 特定の優秀な従業員を作成（デモで個人レベルのドリルダウン時に使用）
@@ -253,14 +562,57 @@ def add_special_patterns_to_employees(employees_df, branches_df):
             employees_df.loc[star_employee_idx, '経験年数'] = 12
             employees_df.loc[star_employee_idx, 'スキルレベル'] = '上級'
             employees_df.loc[star_employee_idx, '研修受講回数'] = 25
-    
+            
     return employees_df
+
+def get_procedure_weights():
+    """
+    手続きの発生頻度の重みを返す関数
+    実際の金融機関での手続き頻度を反映
+    """
+    procedure_weights = {
+        '普通預金口座開設（個人）': 8,
+        '定期預金口座開設': 4,
+        '外貨預金口座開設': 1,
+        '住所変更（通常）': 15,  # 最も頻度が高い
+        '住所変更（海外転居）': 1,
+        '氏名変更（結婚）': 5,
+        '氏名変更（離婚）': 2,
+        '電話番号・メールアドレス変更': 10,
+        '勤務先変更': 3,
+        'キャッシュカード新規発行': 6,
+        'キャッシュカード再発行（紛失）': 8,
+        'キャッシュカード暗証番号変更': 4,
+        'クレジットカード申込': 3,
+        '振込（窓口・高額）': 12,  # 頻度高い
+        '海外送金': 1,
+        '自動振込設定・変更': 4,
+        '残高証明書発行': 7,
+        '取引明細発行（過去5年分）': 3,
+        '融資証明書発行': 2,
+        '住宅ローン相談・仮審査': 2,
+        'カードローン申込': 3,
+        'ローン繰上返済': 2,
+        '相続手続き（預金）': 1,  # 頻度低いが時間がかかる
+        '贈与手続き': 1,
+        '口座解約': 4,
+        '通帳再発行': 6,
+        '印鑑変更': 3,
+        '貸金庫契約': 1,
+        'インターネットバンキング初期設定': 5
+    }
+    return procedure_weights
 
 
 def create_transaction_data(start_date, end_date, branches_df, procedures_df, employees_df):
-    """トランザクションデータを生成"""
+    """拡張版トランザクションデータを生成"""
     transactions = []
     current_date = start_date
+    
+    # 手続きの重みを取得してDataFrameに追加
+    procedure_weights = get_procedure_weights()
+    procedures_df = procedures_df.copy()
+    procedures_df['weight'] = procedures_df['手続き名称'].map(procedure_weights).fillna(1)
     
     while current_date <= end_date:
         # 曜日による件数調整
@@ -270,8 +622,12 @@ def create_transaction_data(start_date, end_date, branches_df, procedures_df, em
         else:  # 週末
             base_count = 30
             
-        # 月末は1.5倍
-        if current_date.day >= 25:
+        # 月末・月初は件数増加
+        if current_date.day <= 5 or current_date.day >= 25:
+            base_count = int(base_count * 1.3)
+            
+        # 給料日（25日）は特に混雑
+        if current_date.day == 25:
             base_count = int(base_count * 1.5)
         
         for branch in branches_df.itertuples():
@@ -286,35 +642,73 @@ def create_transaction_data(start_date, end_date, branches_df, procedures_df, em
             
             for _ in range(daily_count):
                 # 時間帯による分布（開店直後と昼休み明けにピーク）
-                hour_weights = [1, 2, 3, 2, 1, 1, 2, 3, 2, 1]  # 9-18時
+                hour_weights = [1.5, 2.5, 3, 2, 1, 0.8, 2, 2.5, 2, 1]  # 9-18時
                 hour = np.random.choice(range(9, 19), p=np.array(hour_weights)/sum(hour_weights))
                 minute = random.randint(0, 59)
                 
-                # 手続き選択（頻度に偏りを持たせる）
-                procedure = procedures_df.sample(weights=[5, 1, 4, 2, 3, 2, 1]).iloc[0]
+                # 手続き選択（重みづけ）
+                procedure = procedures_df.sample(weights='weight').iloc[0]
                 
-                # 処理時間の生成（正規分布 + 異常値）
+                # 処理時間の生成（より現実的なばらつき）
                 base_time = procedure['標準処理時間_分']
-                if random.random() < 0.9:  # 90%は正常範囲
-                    process_time = int(np.random.normal(base_time, base_time * 0.2))
-                else:  # 10%は異常値
-                    process_time = int(base_time * random.uniform(1.5, 3))
                 
-                # エラー発生（新人ほど高確率）
+                # 難易度による処理時間のばらつき
+                if procedure['難易度'] == '高':
+                    # 高難度の手続きは時間のばらつきが大きい
+                    if random.random() < 0.7:  # 70%は標準的
+                        process_time = int(np.random.normal(base_time, base_time * 0.3))
+                    elif random.random() < 0.9:  # 20%は長め
+                        process_time = int(base_time * random.uniform(1.3, 2.0))
+                    else:  # 10%は非常に長い
+                        process_time = int(base_time * random.uniform(2.0, 3.0))
+                elif procedure['難易度'] == '中':
+                    if random.random() < 0.8:  # 80%は標準的
+                        process_time = int(np.random.normal(base_time, base_time * 0.2))
+                    else:  # 20%は長め
+                        process_time = int(base_time * random.uniform(1.2, 1.8))
+                else:  # 低難度
+                    if random.random() < 0.9:  # 90%は標準的
+                        process_time = int(np.random.normal(base_time, base_time * 0.15))
+                    else:  # 10%は少し長め
+                        process_time = int(base_time * random.uniform(1.1, 1.5))
+                
+                # 従業員のスキルによる調整
                 employee = branch_employees.sample().iloc[0]
-                error_rate = 0.02 if employee['スキルレベル'] == '上級' else \
-                            0.05 if employee['スキルレベル'] == '中級' else 0.10
+                if employee['スキルレベル'] == '初級':
+                    process_time = int(process_time * random.uniform(1.1, 1.3))
+                elif employee['スキルレベル'] == '上級':
+                    process_time = int(process_time * random.uniform(0.8, 0.95))
+                
+                # エラー発生率（手続きの難易度も考慮）
+                base_error_rate = 0.02 if employee['スキルレベル'] == '上級' else \
+                                 0.05 if employee['スキルレベル'] == '中級' else 0.10
+                
+                # 難易度による調整
+                if procedure['難易度'] == '高':
+                    error_rate = base_error_rate * 1.5
+                elif procedure['難易度'] == '中':
+                    error_rate = base_error_rate * 1.2
+                else:
+                    error_rate = base_error_rate
+                
+                # 待ち時間（時間帯と手続きによる）
+                if hour in [10, 11, 14, 15]:  # ピーク時間
+                    wait_time = random.randint(10, 40)
+                else:
+                    wait_time = random.randint(0, 20)
                 
                 transaction = {
                     '処理ID': len(transactions) + 1,
                     '支店ID': branch.支店ID,
-                    '支店名': branch.支店名,  # 支店名を追加
+                    '支店名': branch.支店名,
                     '従業員ID': employee['従業員ID'],
                     '手続きID': procedure['手続きID'],
-                    '手続き名称': procedure['手続き名称'],  # 手続き名称を追加
+                    '手続き名称': procedure['手続き名称'],
+                    '手続き大分類': procedure['大分類'],
+                    '手続き難易度': procedure['難易度'],
                     '処理日付': current_date,
                     '受付時刻': f'{hour:02d}:{minute:02d}',
-                    '待ち時間_分': random.randint(0, 20),
+                    '待ち時間_分': wait_time,
                     '処理時間_分': max(5, process_time),
                     'エラー有無': 1 if random.random() < error_rate else 0,
                     '顧客満足度': np.random.choice([1,2,3,4,5], 
@@ -330,22 +724,31 @@ def create_transaction_data(start_date, end_date, branches_df, procedures_df, em
 
 def add_demo_patterns(df):
     """デモ用のパターンをトランザクションデータに追加"""
-    # パターン1: 特定支店の午後の処理時間が長い
+    # パターン1: 東京中央支店の午後の処理時間が長い（特に複雑な手続き）
     tokyo_rows = df[df['支店名'] == '東京中央支店'].index
     for idx in tokyo_rows:
         time_str = df.loc[idx, '受付時刻']
         hour = int(time_str.split(':')[0])
         if hour >= 13:  # 午後
-            df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * 1.5)
+            # 難易度が高い手続きは特に影響を受ける
+            if df.loc[idx, '手続き難易度'] == '高':
+                df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * 1.8)
+            else:
+                df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * 1.5)
     
-    # パターン2: 埼玉新都心支店のエラー率が高い
+    # パターン2: 埼玉新都心支店のエラー率が高い（特に難しい手続き）
     saitama_rows = df[df['支店名'] == '埼玉新都心支店'].index
     if len(saitama_rows) > 0:
-        # エラー率を15%に設定
-        error_count = int(len(saitama_rows) * 0.15)
-        error_indices = np.random.choice(saitama_rows, error_count, replace=False)
-        df.loc[saitama_rows, 'エラー有無'] = 0  # 一旦全部0に
-        df.loc[error_indices, 'エラー有無'] = 1  # 選択したものを1に
+        # 難易度別にエラー率を設定
+        for idx in saitama_rows:
+            if df.loc[idx, '手続き難易度'] == '高':
+                error_prob = 0.25  # 高難度手続きは25%のエラー率
+            elif df.loc[idx, '手続き難易度'] == '中':
+                error_prob = 0.15  # 中難度手続きは15%のエラー率
+            else:
+                error_prob = 0.08  # 低難度手続きは8%のエラー率
+            
+            df.loc[idx, 'エラー有無'] = 1 if random.random() < error_prob else 0
     
     # パターン3: 大阪梅田支店の改善効果（直近3ヶ月で徐々に改善）
     osaka_rows = df[df['支店名'] == '大阪梅田支店'].index
@@ -357,6 +760,29 @@ def add_demo_patterns(df):
             days_ago = (df['処理日付'].max() - df.loc[idx, '処理日付']).days
             improvement_factor = 1 - (90 - days_ago) / 90 * 0.3
             df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * improvement_factor)
+            
+            # エラー率も改善
+            if df.loc[idx, 'エラー有無'] == 1:
+                # 改善により一部のエラーが解消
+                if random.random() < (90 - days_ago) / 90 * 0.5:
+                    df.loc[idx, 'エラー有無'] = 0
+    
+    # パターン4: 相続手続きは特定の支店に集中
+    inheritance_rows = df[df['手続き名称'].str.contains('相続|贈与')].index
+    if len(inheritance_rows) > 0:
+        # 70%を特定の大規模支店に集中させる
+        large_branches = ['東京中央支店', '大阪梅田支店', '名古屋栄支店']
+        for idx in inheritance_rows:
+            if random.random() < 0.7:
+                df.loc[idx, '支店名'] = random.choice(large_branches)
+    
+    # パターン5: 月末の住宅ローン相談増加
+    loan_consultation = df[df['手続き名称'] == '住宅ローン相談・仮審査'].index
+    for idx in loan_consultation:
+        if df.loc[idx, '処理日付'].day >= 25:
+            # 月末は処理時間が長くなる（混雑のため）
+            df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * 1.3)
+            df.loc[idx, '待ち時間_分'] = int(df.loc[idx, '待ち時間_分'] * 2)
     
     return df
 
@@ -369,7 +795,7 @@ def export_demo_data():
     employees = create_employee_master(branches)
     
     # デモ用パターンを従業員に追加
-    # employees = add_special_patterns_to_employees(employees, branches)
+    employees = add_special_patterns_to_employees(employees, branches)
     
     print("トランザクションデータ生成中...")
     # トランザクションデータ生成（1年分）
@@ -435,6 +861,16 @@ def export_demo_data():
     print(f"   - 手続き種類: {len(procedures)}")
     print(f"   - 処理履歴数: {len(transactions):,}")
     print(f"   - データ期間: {start_date.strftime('%Y/%m/%d')} ～ {end_date.strftime('%Y/%m/%d')}")
+    
+    print("\n📋 手続き別統計:")
+    print(f"   - 最短処理: {procedures.loc[procedures['標準処理時間_分'].idxmin(), '手続き名称']} ({procedures['標準処理時間_分'].min()}分)")
+    print(f"   - 最長処理: {procedures.loc[procedures['標準処理時間_分'].idxmax(), '手続き名称']} ({procedures['標準処理時間_分'].max()}分)")
+    print(f"   - 平均処理時間: {procedures['標準処理時間_分'].mean():.1f}分")
+    
+    print("\n🏢 支店別処理件数TOP5:")
+    branch_counts = transactions['支店名'].value_counts().head()
+    for branch, count in branch_counts.items():
+        print(f"   - {branch}: {count:,}件")
 
 
 if __name__ == "__main__":
