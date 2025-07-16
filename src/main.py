@@ -5,874 +5,293 @@ from datetime import datetime, timedelta
 import random
 import os
 
+# 日本語のFakerインスタンスを作成
 fake = Faker('ja_JP')
 
+# シード値を設定（再現性のため）
+random.seed(42)
+np.random.seed(42)
+Faker.seed(42)
 
-def create_branch_master():
-    """支店マスタデータを生成"""
-    branches = []
+# 定数定義
+NUM_BRANCHES = 20
+NUM_EMPLOYEES = 150
+NUM_CUSTOMERS = 3000
+NUM_TRANSACTIONS = 50000
+START_DATE = datetime(2023, 1, 1)
+END_DATE = datetime(2024, 12, 31)
+
+# 支店データの生成
+def create_branches():
+    regions = ['関東', '関西', '中部', '九州', '東北', '北海道', '中国', '四国']
     branch_types = ['本店', '支店', '出張所']
-    regions = ['都市部', '郊外', '地方']
-    prefectures = ['東京都', '大阪府', '愛知県', '福岡県', '北海道', 
-                   '宮城県', '広島県', '神奈川県', '埼玉県', '千葉県']
     
-    # 特定の支店名を確実に含める（デモシナリオ用）
-    fixed_branches = [
-        {'name': '東京中央支店', 'pref': '東京都', 'region': '都市部', 'type': '支店'},
-        {'name': '大阪梅田支店', 'pref': '大阪府', 'region': '都市部', 'type': '支店'},
-        {'name': '埼玉新都心支店', 'pref': '埼玉県', 'region': '郊外', 'type': '支店'},
-    ]
-    
-    for i in range(25):
-        if i < len(fixed_branches):
-            # 固定支店
-            branch = {
-                '支店ID': i + 1,
-                '支店コード': f'BR{str(i+1).zfill(3)}',
-                '支店名': fixed_branches[i]['name'],
-                '支店区分': fixed_branches[i]['type'],
-                '地域区分': fixed_branches[i]['region'],
-                '都道府県': fixed_branches[i]['pref'],
-                '窓口数': random.randint(5, 10),
-                '従業員数': random.randint(20, 50),
-                '月間来店客数_目安': random.randint(2000, 5000)
-            }
-        else:
-            # ランダム支店
-            branch = {
-                '支店ID': i + 1,
-                '支店コード': f'BR{str(i+1).zfill(3)}',
-                '支店名': f'{random.choice(prefectures)}{fake.city()}支店',
-                '支店区分': np.random.choice(branch_types, p=[0.1, 0.7, 0.2]),
-                '地域区分': np.random.choice(regions, p=[0.4, 0.4, 0.2]),
-                '都道府県': random.choice(prefectures),
-                '窓口数': random.randint(3, 10),
-                '従業員数': random.randint(15, 50),
-                '月間来店客数_目安': random.randint(1000, 5000)
-            }
+    branches = []
+    for i in range(NUM_BRANCHES):
+        branch = {
+            'branch_id': f'BR{i+1:03d}',
+            'branch_name': f'{fake.city()}支店',
+            'region': random.choice(regions),
+            'branch_type': random.choices(branch_types, weights=[1, 8, 3])[0]
+        }
         branches.append(branch)
     
     return pd.DataFrame(branches)
 
-
-def create_procedure_master():
-    """
-    金融機関の実務に基づいた拡張版手続きマスタデータを生成
-    処理時間のばらつきを大きくし、実際の業務を反映
-    """
-    procedures = [
-        # === 口座開設関連 ===
-        {
-            '手続き名称': '普通預金口座開設（個人）',
-            '大分類': '口座開設',
-            '中分類': '普通預金',
-            '標準処理時間_分': 30,
-            '難易度': '中',
-            '必要書類数': 3,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '定期預金口座開設',
-            '大分類': '口座開設',
-            '中分類': '定期預金',
-            '標準処理時間_分': 25,
-            '難易度': '低',
-            '必要書類数': 2,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '外貨預金口座開設',
-            '大分類': '口座開設',
-            '中分類': '外貨預金',
-            '標準処理時間_分': 45,
-            '難易度': '高',
-            '必要書類数': 4,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        
-        # === 顧客情報変更 ===
-        {
-            '手続き名称': '住所変更（通常）',
-            '大分類': '顧客情報変更',
-            '中分類': '住所変更',
-            '標準処理時間_分': 15,
-            '難易度': '低',
-            '必要書類数': 2,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '住所変更（海外転居）',
-            '大分類': '顧客情報変更',
-            '中分類': '住所変更',
-            '標準処理時間_分': 35,
-            '難易度': '高',
-            '必要書類数': 5,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '氏名変更（結婚）',
-            '大分類': '顧客情報変更',
-            '中分類': '氏名変更',
-            '標準処理時間_分': 20,
-            '難易度': '中',
-            '必要書類数': 3,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '氏名変更（離婚）',
-            '大分類': '顧客情報変更',
-            '中分類': '氏名変更',
-            '標準処理時間_分': 20,
-            '難易度': '中',
-            '必要書類数': 3,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '電話番号・メールアドレス変更',
-            '大分類': '顧客情報変更',
-            '中分類': '連絡先変更',
-            '標準処理時間_分': 8,
-            '難易度': '低',
-            '必要書類数': 1,
-            '本人確認レベル': '簡易',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '勤務先変更',
-            '大分類': '顧客情報変更',
-            '中分類': '属性変更',
-            '標準処理時間_分': 12,
-            '難易度': '低',
-            '必要書類数': 2,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        
-        # === カード関連 ===
-        {
-            '手続き名称': 'キャッシュカード新規発行',
-            '大分類': 'カード関連',
-            '中分類': '新規発行',
-            '標準処理時間_分': 15,
-            '難易度': '低',
-            '必要書類数': 1,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': 'キャッシュカード再発行（紛失）',
-            '大分類': 'カード関連',
-            '中分類': '再発行',
-            '標準処理時間_分': 10,
-            '難易度': '低',
-            '必要書類数': 2,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': 'キャッシュカード暗証番号変更',
-            '大分類': 'カード関連',
-            '中分類': '暗証番号',
-            '標準処理時間_分': 5,
-            '難易度': '低',
-            '必要書類数': 1,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': 'クレジットカード申込',
-            '大分類': 'カード関連',
-            '中分類': 'クレジット',
-            '標準処理時間_分': 40,
-            '難易度': '高',
-            '必要書類数': 5,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        
-        # === 振込・送金 ===
-        {
-            '手続き名称': '振込（窓口・高額）',
-            '大分類': '振込・送金',
-            '中分類': '国内振込',
-            '標準処理時間_分': 10,
-            '難易度': '低',
-            '必要書類数': 1,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '海外送金',
-            '大分類': '振込・送金',
-            '中分類': '海外送金',
-            '標準処理時間_分': 50,
-            '難易度': '高',
-            '必要書類数': 6,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '自動振込設定・変更',
-            '大分類': '振込・送金',
-            '中分類': '自動振込',
-            '標準処理時間_分': 18,
-            '難易度': '中',
-            '必要書類数': 2,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        
-        # === 各種証明書 ===
-        {
-            '手続き名称': '残高証明書発行',
-            '大分類': '証明書発行',
-            '中分類': '残高証明',
-            '標準処理時間_分': 10,
-            '難易度': '低',
-            '必要書類数': 1,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '取引明細発行（過去5年分）',
-            '大分類': '証明書発行',
-            '中分類': '取引明細',
-            '標準処理時間_分': 25,
-            '難易度': '中',
-            '必要書類数': 2,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '融資証明書発行',
-            '大分類': '証明書発行',
-            '中分類': '融資証明',
-            '標準処理時間_分': 20,
-            '難易度': '中',
-            '必要書類数': 3,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        
-        # === ローン関連 ===
-        {
-            '手続き名称': '住宅ローン相談・仮審査',
-            '大分類': 'ローン関連',
-            '中分類': '住宅ローン',
-            '標準処理時間_分': 90,
-            '難易度': '高',
-            '必要書類数': 8,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': 'カードローン申込',
-            '大分類': 'ローン関連',
-            '中分類': 'カードローン',
-            '標準処理時間_分': 35,
-            '難易度': '中',
-            '必要書類数': 4,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': 'ローン繰上返済',
-            '大分類': 'ローン関連',
-            '中分類': '返済手続き',
-            '標準処理時間_分': 30,
-            '難易度': '中',
-            '必要書類数': 3,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        
-        # === 相続・贈与 ===
-        {
-            '手続き名称': '相続手続き（預金）',
-            '大分類': '相続・贈与',
-            '中分類': '相続',
-            '標準処理時間_分': 120,
-            '難易度': '高',
-            '必要書類数': 10,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 0
-        },
-        {
-            '手続き名称': '贈与手続き',
-            '大分類': '相続・贈与',
-            '中分類': '贈与',
-            '標準処理時間_分': 60,
-            '難易度': '高',
-            '必要書類数': 6,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 0
-        },
-        
-        # === その他手続き ===
-        {
-            '手続き名称': '口座解約',
-            '大分類': '口座管理',
-            '中分類': '解約',
-            '標準処理時間_分': 25,
-            '難易度': '中',
-            '必要書類数': 2,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '通帳再発行',
-            '大分類': 'その他手続き',
-            '中分類': '再発行',
-            '標準処理時間_分': 12,
-            '難易度': '低',
-            '必要書類数': 2,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        },
-        {
-            '手続き名称': '印鑑変更',
-            '大分類': 'その他手続き',
-            '中分類': '印鑑',
-            '標準処理時間_分': 15,
-            '難易度': '中',
-            '必要書類数': 3,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 0
-        },
-        {
-            '手続き名称': '貸金庫契約',
-            '大分類': 'その他手続き',
-            '中分類': '貸金庫',
-            '標準処理時間_分': 40,
-            '難易度': '中',
-            '必要書類数': 4,
-            '本人確認レベル': '厳格',
-            'システム処理有無': 0
-        },
-        {
-            '手続き名称': 'インターネットバンキング初期設定',
-            '大分類': 'その他手続き',
-            '中分類': 'ネットバンキング',
-            '標準処理時間_分': 20,
-            '難易度': '中',
-            '必要書類数': 1,
-            '本人確認レベル': '通常',
-            'システム処理有無': 1
-        }
-    ]
+# 営業担当者データの生成
+def create_employees(branches_df):
+    departments = ['個人営業部', '法人営業部', '資産運用部']
+    positions = ['一般', '主任', '係長', '課長', '部長']
     
-    df = pd.DataFrame(procedures)
-    df['手続きID'] = range(1, len(df) + 1)
-    
-    # 手続きコードを生成（大分類の頭文字 + 連番）
-    category_codes = {
-        '口座開設': 'ACC',
-        '顧客情報変更': 'CUS',
-        'カード関連': 'CRD',
-        '振込・送金': 'TRF',
-        '証明書発行': 'CRT',
-        'ローン関連': 'LON',
-        '相続・贈与': 'INH',
-        '口座管理': 'MGT',
-        'その他手続き': 'OTH'
-    }
-    
-    df['手続きコード'] = df.apply(
-        lambda row: f"{category_codes.get(row['大分類'], 'OTH')}{str(row['手続きID']).zfill(3)}", 
-        axis=1
-    )
-    
-    return df
-
-
-def create_employee_master(branches_df):
-    """従業員マスタデータを生成"""
     employees = []
-    employee_id = 1
-    
-    # 役職の定義と分布
-    positions = {
-        '支店長': {'ratio': 0.03, 'exp_min': 20, 'exp_max': 35, 'skill': '上級'},
-        '副支店長': {'ratio': 0.05, 'exp_min': 15, 'exp_max': 30, 'skill': '上級'},
-        '課長': {'ratio': 0.10, 'exp_min': 12, 'exp_max': 25, 'skill': '上級'},
-        '係長': {'ratio': 0.15, 'exp_min': 8, 'exp_max': 20, 'skill': '中級'},
-        '主任': {'ratio': 0.22, 'exp_min': 5, 'exp_max': 15, 'skill': '中級'},
-        '一般職員': {'ratio': 0.45, 'exp_min': 0, 'exp_max': 10, 'skill': '初級'}
-    }
-    
-    # 雇用形態の分布
-    employment_types = {
-        '正社員': 0.75,
-        'パート': 0.20,
-        '派遣': 0.05
-    }
-    
-    # 姓のリスト（日本でよくある姓）
-    last_names = ['佐藤', '鈴木', '高橋', '田中', '渡辺', '伊藤', '山本', '中村', '小林', '加藤',
-                  '吉田', '山田', '佐々木', '山口', '斎藤', '松本', '井上', '木村', '清水', '山崎',
-                  '森', '阿部', '池田', '橋本', '石川', '山下', '中島', '前田', '藤田', '小川']
-    
-    # 名のリスト（男性）
-    male_first_names = ['太郎', '一郎', '健', '誠', '隆', '剛', '大輔', '健太', '翔太', '拓也',
-                       '和也', '直樹', '浩', '明', '正', '博', '秀樹', '雄大', '智也', '裕介']
-    
-    # 名のリスト（女性）
-    female_first_names = ['花子', '美香', '愛', '由美', '恵子', '裕子', '真由美', '陽子', '直美', '智子',
-                         '美穂', '香織', '理恵', '麻衣', '彩', '舞', '優子', '綾子', '未来', '沙織']
-    
-    for branch in branches_df.itertuples():
-        branch_employee_count = branch.従業員数
-        
-        # 役職ごとの人数を計算
-        position_counts = {}
-        remaining = branch_employee_count
-        
-        for position, info in positions.items():
-            if position == '一般職員':
-                # 残りは全て一般職員
-                position_counts[position] = remaining
-            else:
-                count = max(1, int(branch_employee_count * info['ratio']))
-                position_counts[position] = min(count, remaining)
-                remaining -= position_counts[position]
-        
-        # 各役職の従業員を生成
-        for position, count in position_counts.items():
-            for _ in range(count):
-                # 性別をランダムに決定（男性60%、女性40%）
-                is_male = random.random() < 0.6
-                
-                # 名前生成
-                last_name = random.choice(last_names)
-                if is_male:
-                    first_name = random.choice(male_first_names)
-                else:
-                    first_name = random.choice(female_first_names)
-                
-                # 経験年数とスキルレベル
-                exp_min = positions[position]['exp_min']
-                exp_max = positions[position]['exp_max']
-                experience_years = random.randint(exp_min, exp_max)
-                
-                # スキルレベルの決定（経験年数も考慮）
-                if experience_years >= 15:
-                    skill_level = '上級'
-                elif experience_years >= 5:
-                    skill_level = '中級'
-                else:
-                    skill_level = '初級'
-                
-                # 新人は必ず初級
-                if position == '一般職員' and experience_years <= 2:
-                    skill_level = '初級'
-                
-                # 雇用形態（役職によって調整）
-                if position in ['支店長', '副支店長', '課長']:
-                    employment_type = '正社員'
-                else:
-                    employment_type = np.random.choice(
-                        list(employment_types.keys()),
-                        p=list(employment_types.values())
-                    )
-                
-                # 入社年月を経験年数から逆算
-                hire_date = datetime.now() - timedelta(days=experience_years * 365 + random.randint(-180, 180))
-                
-                # 研修受講回数（経験年数と役職に応じて）
-                if experience_years <= 1:
-                    training_count = random.randint(3, 5)  # 新人は研修多め
-                elif position in ['支店長', '副支店長', '課長']:
-                    training_count = experience_years + random.randint(5, 10)  # 管理職は研修多め
-                else:
-                    training_count = int(experience_years * 0.8) + random.randint(0, 3)
-                
-                employee = {
-                    '従業員ID': employee_id,
-                    '従業員番号': f'EMP{str(employee_id).zfill(6)}',
-                    '氏名': f'{last_name} {first_name}',
-                    '所属支店ID': branch.支店ID,
-                    '役職': position,
-                    '経験年数': experience_years,
-                    'スキルレベル': skill_level,
-                    '雇用形態': employment_type,
-                    '入社年月': hire_date.strftime('%Y-%m-%d'),
-                    '研修受講回数': training_count
-                }
-                
-                employees.append(employee)
-                employee_id += 1
+    for i in range(NUM_EMPLOYEES):
+        hire_date = fake.date_between(start_date='-10y', end_date='-1y')
+        employee = {
+            'employee_id': f'EMP{i+1:04d}',
+            'employee_name': fake.name(),
+            'branch_id': random.choice(branches_df['branch_id'].tolist()),
+            'department': random.choice(departments),
+            'hire_date': hire_date,
+            'position': random.choices(positions, weights=[40, 25, 20, 10, 5])[0]
+        }
+        employees.append(employee)
     
     return pd.DataFrame(employees)
 
-def add_special_patterns_to_employees(employees_df, branches_df):
-    """デモ用に特定のパターンを従業員データに追加"""
-    # パターン1: 東京中央支店に新人を多く配置（処理時間が長い原因）
-    tokyo_branch = branches_df[branches_df['支店名'] == '東京中央支店']
-    if not tokyo_branch.empty:
-        tokyo_branch_id = tokyo_branch.iloc[0]['支店ID']
-        tokyo_employees = employees_df[employees_df['所属支店ID'] == tokyo_branch_id].index
-        
-        # 東京中央支店の30%を新人（経験年数0-2年）に変更
-        sample_size = int(len(tokyo_employees) * 0.3)
-        new_employees = np.random.choice(tokyo_employees, sample_size, replace=False)
-        
-        for idx in new_employees:
-            employees_df.loc[idx, '経験年数'] = random.randint(0, 2)
-            employees_df.loc[idx, 'スキルレベル'] = '初級'
-            employees_df.loc[idx, '研修受講回数'] = random.randint(1, 3)
-            # 入社年月も調整
-            # `int()`で明示的に整数型に変換する
-            hire_date = datetime.now() - timedelta(days=int(employees_df.loc[idx, '経験年数']) * 365)
-            employees_df.loc[idx, '入社年月'] = hire_date.strftime('%Y-%m-%d')
+# 顧客データの生成
+def create_customers(employees_df):
+    customer_types = ['個人', '法人']
+    industries = ['製造業', '小売業', 'サービス業', '建設業', 'IT', '医療', '不動産', 'その他']
     
-    # パターン2: 大阪梅田支店にベテランを多く配置（処理時間が短い原因）
-    osaka_branch = branches_df[branches_df['支店名'] == '大阪梅田支店']
-    if not osaka_branch.empty:
-        osaka_branch_id = osaka_branch.iloc[0]['支店ID']
-        osaka_employees = employees_df[employees_df['所属支店ID'] == osaka_branch_id].index
-        
-        # 大阪梅田支店の50%をベテラン（経験年数10年以上）に変更
-        sample_size = int(len(osaka_employees) * 0.5)
-        veteran_employees = np.random.choice(osaka_employees, sample_size, replace=False)
-        
-        for idx in veteran_employees:
-            employees_df.loc[idx, '経験年数'] = random.randint(10, 25)
-            employees_df.loc[idx, 'スキルレベル'] = '上級'
-            employees_df.loc[idx, '研修受講回数'] = employees_df.loc[idx, '経験年数'] + random.randint(5, 10)
-            # 入社年月も調整
-            # `int()`で明示的に整数型に変換する
-            hire_date = datetime.now() - timedelta(days=int(employees_df.loc[idx, '経験年数']) * 365)
-            employees_df.loc[idx, '入社年月'] = hire_date.strftime('%Y-%m-%d')
-        
-        # パターン3: 特定の優秀な従業員を作成（デモで個人レベルのドリルダウン時に使用）
-        star_employees = employees_df[
-            (employees_df['所属支店ID'] == osaka_branch_id) & 
-            (employees_df['役職'] == '主任')
-        ]
-        if not star_employees.empty:
-            star_employee_idx = star_employees.index[0]
-            employees_df.loc[star_employee_idx, '氏名'] = '山田 優子'
-            employees_df.loc[star_employee_idx, '経験年数'] = 12
-            employees_df.loc[star_employee_idx, 'スキルレベル'] = '上級'
-            employees_df.loc[star_employee_idx, '研修受講回数'] = 25
-            
-    return employees_df
+    customers = []
+    for i in range(NUM_CUSTOMERS):
+        customer_type = random.choices(customer_types, weights=[7, 3])[0]
+        customer = {
+            'customer_id': f'CUST{i+1:05d}',
+            'customer_name': fake.company() if customer_type == '法人' else fake.name(),
+            'customer_type': customer_type,
+            'industry': random.choice(industries) if customer_type == '法人' else None,
+            'registration_date': fake.date_between(start_date='-5y', end_date='today'),
+            'assigned_employee_id': random.choice(employees_df['employee_id'].tolist())
+        }
+        customers.append(customer)
+    
+    return pd.DataFrame(customers)
 
-def get_procedure_weights():
-    """
-    手続きの発生頻度の重みを返す関数
-    実際の金融機関での手続き頻度を反映
-    """
-    procedure_weights = {
-        '普通預金口座開設（個人）': 8,
-        '定期預金口座開設': 4,
-        '外貨預金口座開設': 1,
-        '住所変更（通常）': 15,  # 最も頻度が高い
-        '住所変更（海外転居）': 1,
-        '氏名変更（結婚）': 5,
-        '氏名変更（離婚）': 2,
-        '電話番号・メールアドレス変更': 10,
-        '勤務先変更': 3,
-        'キャッシュカード新規発行': 6,
-        'キャッシュカード再発行（紛失）': 8,
-        'キャッシュカード暗証番号変更': 4,
-        'クレジットカード申込': 3,
-        '振込（窓口・高額）': 12,  # 頻度高い
-        '海外送金': 1,
-        '自動振込設定・変更': 4,
-        '残高証明書発行': 7,
-        '取引明細発行（過去5年分）': 3,
-        '融資証明書発行': 2,
-        '住宅ローン相談・仮審査': 2,
-        'カードローン申込': 3,
-        'ローン繰上返済': 2,
-        '相続手続き（預金）': 1,  # 頻度低いが時間がかかる
-        '贈与手続き': 1,
-        '口座解約': 4,
-        '通帳再発行': 6,
-        '印鑑変更': 3,
-        '貸金庫契約': 1,
-        'インターネットバンキング初期設定': 5
-    }
-    return procedure_weights
+# 商品マスタの生成
+def create_products():
+    products = [
+        # 預金商品
+        {'product_id': 'PRD001', 'product_name': '普通預金', 'product_category': '預金', 'product_type': '普通預金'},
+        {'product_id': 'PRD002', 'product_name': '定期預金', 'product_category': '預金', 'product_type': '定期預金'},
+        {'product_id': 'PRD003', 'product_name': '積立定期預金', 'product_category': '預金', 'product_type': '積立預金'},
+        
+        # 融資商品
+        {'product_id': 'PRD004', 'product_name': '住宅ローン', 'product_category': '融資', 'product_type': '住宅ローン'},
+        {'product_id': 'PRD005', 'product_name': 'カーローン', 'product_category': '融資', 'product_type': 'マイカーローン'},
+        {'product_id': 'PRD006', 'product_name': '事業性融資', 'product_category': '融資', 'product_type': '事業融資'},
+        {'product_id': 'PRD007', 'product_name': 'カードローン', 'product_category': '融資', 'product_type': 'カードローン'},
+        
+        # 投資信託
+        {'product_id': 'PRD008', 'product_name': '国内株式投信', 'product_category': '投資信託', 'product_type': '株式型'},
+        {'product_id': 'PRD009', 'product_name': '海外株式投信', 'product_category': '投資信託', 'product_type': '株式型'},
+        {'product_id': 'PRD010', 'product_name': 'バランス型投信', 'product_category': '投資信託', 'product_type': 'バランス型'},
+        {'product_id': 'PRD011', 'product_name': '債券型投信', 'product_category': '投資信託', 'product_type': '債券型'},
+        
+        # 保険商品
+        {'product_id': 'PRD012', 'product_name': '生命保険', 'product_category': '保険', 'product_type': '生命保険'},
+        {'product_id': 'PRD013', 'product_name': '医療保険', 'product_category': '保険', 'product_type': '医療保険'},
+        {'product_id': 'PRD014', 'product_name': 'がん保険', 'product_category': '保険', 'product_type': 'がん保険'},
+    ]
+    
+    return pd.DataFrame(products)
 
-
-def create_transaction_data(start_date, end_date, branches_df, procedures_df, employees_df):
-    """拡張版トランザクションデータを生成"""
+# 営業実績データの生成
+def create_sales_performance(employees_df, customers_df, products_df):
     transactions = []
-    current_date = start_date
     
-    # 手続きの重みを取得してDataFrameに追加
-    procedure_weights = get_procedure_weights()
-    procedures_df = procedures_df.copy()
-    procedures_df['weight'] = procedures_df['手続き名称'].map(procedure_weights).fillna(1)
+    # 商品別の金額範囲と手数料率を定義
+    amount_ranges = {
+        '預金': (10000, 10000000, 0.001),
+        '融資': (500000, 50000000, 0.02),
+        '投資信託': (100000, 5000000, 0.03),
+        '保険': (50000, 1000000, 0.15)
+    }
     
-    while current_date <= end_date:
-        # 曜日による件数調整
-        weekday = current_date.weekday()
-        if weekday < 5:  # 平日
-            base_count = 100
-        else:  # 週末
-            base_count = 30
-            
-        # 月末・月初は件数増加
-        if current_date.day <= 5 or current_date.day >= 25:
-            base_count = int(base_count * 1.3)
-            
-        # 給料日（25日）は特に混雑
-        if current_date.day == 25:
-            base_count = int(base_count * 1.5)
+    # 支店の実績傾向を設定（デモ用に特定の支店を高パフォーマンスに）
+    branch_performance = {}
+    for branch in employees_df['branch_id'].unique():
+        # ランダムに20%の支店を高パフォーマンス支店に設定
+        branch_performance[branch] = 1.5 if random.random() < 0.2 else 1.0
+    
+    for i in range(NUM_TRANSACTIONS):
+        transaction_date = fake.date_between(start_date=START_DATE, end_date=END_DATE)
+        employee_row = employees_df.sample(n=1).iloc[0]
+        employee = employee_row['employee_id']
+        branch = employee_row['branch_id']
+        customer_row = customers_df.sample(n=1).iloc[0]
+        customer = customer_row['customer_id']
+        customer_type = customer_row['customer_type']
         
-        for branch in branches_df.itertuples():
-            # 支店規模による調整
-            branch_multiplier = branch.従業員数 / 30
-            daily_count = int(base_count * branch_multiplier * random.uniform(0.8, 1.2))
-            
-            # その支店の従業員を取得
-            branch_employees = employees_df[employees_df['所属支店ID'] == branch.支店ID]
-            if branch_employees.empty:
-                continue
-            
-            for _ in range(daily_count):
-                # 時間帯による分布（開店直後と昼休み明けにピーク）
-                hour_weights = [1.5, 2.5, 3, 2, 1, 0.8, 2, 2.5, 2, 1]  # 9-18時
-                hour = np.random.choice(range(9, 19), p=np.array(hour_weights)/sum(hour_weights))
-                minute = random.randint(0, 59)
-                
-                # 手続き選択（重みづけ）
-                procedure = procedures_df.sample(weights='weight').iloc[0]
-                
-                # 処理時間の生成（より現実的なばらつき）
-                base_time = procedure['標準処理時間_分']
-                
-                # 難易度による処理時間のばらつき
-                if procedure['難易度'] == '高':
-                    # 高難度の手続きは時間のばらつきが大きい
-                    if random.random() < 0.7:  # 70%は標準的
-                        process_time = int(np.random.normal(base_time, base_time * 0.3))
-                    elif random.random() < 0.9:  # 20%は長め
-                        process_time = int(base_time * random.uniform(1.3, 2.0))
-                    else:  # 10%は非常に長い
-                        process_time = int(base_time * random.uniform(2.0, 3.0))
-                elif procedure['難易度'] == '中':
-                    if random.random() < 0.8:  # 80%は標準的
-                        process_time = int(np.random.normal(base_time, base_time * 0.2))
-                    else:  # 20%は長め
-                        process_time = int(base_time * random.uniform(1.2, 1.8))
-                else:  # 低難度
-                    if random.random() < 0.9:  # 90%は標準的
-                        process_time = int(np.random.normal(base_time, base_time * 0.15))
-                    else:  # 10%は少し長め
-                        process_time = int(base_time * random.uniform(1.1, 1.5))
-                
-                # 従業員のスキルによる調整
-                employee = branch_employees.sample().iloc[0]
-                if employee['スキルレベル'] == '初級':
-                    process_time = int(process_time * random.uniform(1.1, 1.3))
-                elif employee['スキルレベル'] == '上級':
-                    process_time = int(process_time * random.uniform(0.8, 0.95))
-                
-                # エラー発生率（手続きの難易度も考慮）
-                base_error_rate = 0.02 if employee['スキルレベル'] == '上級' else \
-                                 0.05 if employee['スキルレベル'] == '中級' else 0.10
-                
-                # 難易度による調整
-                if procedure['難易度'] == '高':
-                    error_rate = base_error_rate * 1.5
-                elif procedure['難易度'] == '中':
-                    error_rate = base_error_rate * 1.2
-                else:
-                    error_rate = base_error_rate
-                
-                # 待ち時間（時間帯と手続きによる）
-                if hour in [10, 11, 14, 15]:  # ピーク時間
-                    wait_time = random.randint(10, 40)
-                else:
-                    wait_time = random.randint(0, 20)
-                
-                transaction = {
-                    '処理ID': len(transactions) + 1,
-                    '支店ID': branch.支店ID,
-                    '支店名': branch.支店名,
-                    '従業員ID': employee['従業員ID'],
-                    '手続きID': procedure['手続きID'],
-                    '手続き名称': procedure['手続き名称'],
-                    '手続き大分類': procedure['大分類'],
-                    '手続き難易度': procedure['難易度'],
-                    '処理日付': current_date,
-                    '受付時刻': f'{hour:02d}:{minute:02d}',
-                    '待ち時間_分': wait_time,
-                    '処理時間_分': max(5, process_time),
-                    'エラー有無': 1 if random.random() < error_rate else 0,
-                    '顧客満足度': np.random.choice([1,2,3,4,5], 
-                                                p=[0.05, 0.10, 0.20, 0.40, 0.25])
-                }
-                
-                transactions.append(transaction)
+        # 商品選択に偏りを持たせる（顧客タイプに応じて）
+        if customer_type == '個人':
+            # 個人顧客は預金と保険が中心
+            weights = {'預金': 0.4, '融資': 0.2, '投資信託': 0.2, '保険': 0.2}
+        else:
+            # 法人顧客は融資が中心
+            weights = {'預金': 0.2, '融資': 0.5, '投資信託': 0.2, '保険': 0.1}
         
-        current_date += timedelta(days=1)
+        # 重み付けに基づいて商品を選択
+        categories = list(weights.keys())
+        category_weights = list(weights.values())
+        selected_category = random.choices(categories, weights=category_weights)[0]
+        product = products_df[products_df['product_category'] == selected_category].sample(n=1).iloc[0]
+        
+        # 商品カテゴリに応じた金額と手数料を設定
+        category = product['product_category']
+        min_amount, max_amount, commission_rate = amount_ranges[category]
+        
+        # 複数の要因を組み合わせた金額計算
+        base_amount = random.randint(min_amount, max_amount)
+        
+        # 1. 季節性（四半期末は取引増）
+        month = transaction_date.month
+        seasonal_factor = 1.0 + (0.3 if month in [3, 9, 12] else 0)
+        
+        # 2. 年次成長トレンド（2024年は2023年より20%成長）
+        year = transaction_date.year
+        growth_factor = 1.2 if year == 2024 else 1.0
+        
+        # 3. 支店パフォーマンス
+        branch_factor = branch_performance.get(branch, 1.0)
+        
+        # 4. 営業担当者の経験（役職に応じた実績）
+        position_factors = {
+            '一般': 0.8,
+            '主任': 1.0,
+            '係長': 1.2,
+            '課長': 1.5,
+            '部長': 2.0
+        }
+        position = employee_row['position']
+        position_factor = position_factors.get(position, 1.0)
+        
+        # 5. 曜日による傾向（月曜と金曜が多い）
+        weekday = transaction_date.weekday()
+        weekday_factor = 1.2 if weekday in [0, 4] else 1.0
+        
+        # すべての要因を組み合わせて最終的な金額を計算
+        amount = base_amount * seasonal_factor * growth_factor * branch_factor * position_factor * weekday_factor
+        
+        # ランダム性を少し加える（±10%）
+        amount = amount * (0.9 + random.random() * 0.2)
+        
+        commission = amount * commission_rate
+        
+        transaction = {
+            'transaction_id': f'TRN{i+1:06d}',
+            'transaction_date': transaction_date,
+            'employee_id': employee,
+            'customer_id': customer,
+            'product_id': product['product_id'],
+            'amount': int(amount),
+            'commission_amount': int(commission)
+        }
+        transactions.append(transaction)
     
     return pd.DataFrame(transactions)
 
+# 営業目標データの生成
+def create_sales_targets(employees_df, products_df):
+    targets = []
+    categories = products_df['product_category'].unique()
+    
+    for year in [2023, 2024]:
+        for month in range(1, 13):
+            for _, employee in employees_df.iterrows():
+                # 役職に応じた目標倍率
+                position_multiplier = {
+                    '一般': 1.0,
+                    '主任': 1.2,
+                    '係長': 1.5,
+                    '課長': 2.0,
+                    '部長': 3.0
+                }
+                
+                multiplier = position_multiplier.get(employee['position'], 1.0)
+                
+                for category in categories:
+                    # 基本目標額（カテゴリ別）
+                    base_targets = {
+                        '預金': 50000000,
+                        '融資': 30000000,
+                        '投資信託': 10000000,
+                        '保険': 5000000
+                    }
+                    
+                    target_amount = base_targets[category] * multiplier
+                    
+                    # 四半期末は目標を20%増
+                    if month in [3, 6, 9, 12]:
+                        target_amount *= 1.2
+                    
+                    target = {
+                        'target_id': f'TGT{len(targets)+1:06d}',
+                        'employee_id': employee['employee_id'],
+                        'target_year': year,
+                        'target_month': month,
+                        'target_amount': int(target_amount),
+                        'product_category': category
+                    }
+                    targets.append(target)
+    
+    return pd.DataFrame(targets)
 
-def add_demo_patterns(df):
-    """デモ用のパターンをトランザクションデータに追加"""
-    # パターン1: 東京中央支店の午後の処理時間が長い（特に複雑な手続き）
-    tokyo_rows = df[df['支店名'] == '東京中央支店'].index
-    for idx in tokyo_rows:
-        time_str = df.loc[idx, '受付時刻']
-        hour = int(time_str.split(':')[0])
-        if hour >= 13:  # 午後
-            # 難易度が高い手続きは特に影響を受ける
-            if df.loc[idx, '手続き難易度'] == '高':
-                df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * 1.8)
-            else:
-                df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * 1.5)
+# メイン処理
+def main():
+    print("デモデータの生成を開始します...")
     
-    # パターン2: 埼玉新都心支店のエラー率が高い（特に難しい手続き）
-    saitama_rows = df[df['支店名'] == '埼玉新都心支店'].index
-    if len(saitama_rows) > 0:
-        # 難易度別にエラー率を設定
-        for idx in saitama_rows:
-            if df.loc[idx, '手続き難易度'] == '高':
-                error_prob = 0.25  # 高難度手続きは25%のエラー率
-            elif df.loc[idx, '手続き難易度'] == '中':
-                error_prob = 0.15  # 中難度手続きは15%のエラー率
-            else:
-                error_prob = 0.08  # 低難度手続きは8%のエラー率
-            
-            df.loc[idx, 'エラー有無'] = 1 if random.random() < error_prob else 0
+    # 出力ディレクトリの作成
+    output_dir = 'financial_demo_data'
+    os.makedirs(output_dir, exist_ok=True)
     
-    # パターン3: 大阪梅田支店の改善効果（直近3ヶ月で徐々に改善）
-    osaka_rows = df[df['支店名'] == '大阪梅田支店'].index
-    if len(osaka_rows) > 0:
-        recent_date = df['処理日付'].max() - timedelta(days=90)
-        recent_osaka = df.loc[osaka_rows][df.loc[osaka_rows, '処理日付'] >= recent_date].index
-        
-        for idx in recent_osaka:
-            days_ago = (df['処理日付'].max() - df.loc[idx, '処理日付']).days
-            improvement_factor = 1 - (90 - days_ago) / 90 * 0.3
-            df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * improvement_factor)
-            
-            # エラー率も改善
-            if df.loc[idx, 'エラー有無'] == 1:
-                # 改善により一部のエラーが解消
-                if random.random() < (90 - days_ago) / 90 * 0.5:
-                    df.loc[idx, 'エラー有無'] = 0
+    # 各テーブルの生成
+    print("1. 支店データを生成中...")
+    branches_df = create_branches()
     
-    # パターン4: 相続手続きは特定の支店に集中
-    inheritance_rows = df[df['手続き名称'].str.contains('相続|贈与')].index
-    if len(inheritance_rows) > 0:
-        # 70%を特定の大規模支店に集中させる
-        large_branches = ['東京中央支店', '大阪梅田支店', '名古屋栄支店']
-        for idx in inheritance_rows:
-            if random.random() < 0.7:
-                df.loc[idx, '支店名'] = random.choice(large_branches)
+    print("2. 営業担当者データを生成中...")
+    employees_df = create_employees(branches_df)
     
-    # パターン5: 月末の住宅ローン相談増加
-    loan_consultation = df[df['手続き名称'] == '住宅ローン相談・仮審査'].index
-    for idx in loan_consultation:
-        if df.loc[idx, '処理日付'].day >= 25:
-            # 月末は処理時間が長くなる（混雑のため）
-            df.loc[idx, '処理時間_分'] = int(df.loc[idx, '処理時間_分'] * 1.3)
-            df.loc[idx, '待ち時間_分'] = int(df.loc[idx, '待ち時間_分'] * 2)
+    print("3. 顧客データを生成中...")
+    customers_df = create_customers(employees_df)
     
-    return df
-
-
-def export_demo_data():
-    """デモデータを生成してエクスポート"""
-    print("マスタデータ生成中...")
-    branches = create_branch_master()
-    procedures = create_procedure_master()
-    employees = create_employee_master(branches)
+    print("4. 商品データを生成中...")
+    products_df = create_products()
     
-    # デモ用パターンを従業員に追加
-    employees = add_special_patterns_to_employees(employees, branches)
+    print("5. 営業実績データを生成中...")
+    sales_performance_df = create_sales_performance(employees_df, customers_df, products_df)
     
-    print("トランザクションデータ生成中...")
-    # トランザクションデータ生成（1年分）
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=365)
-    transactions = create_transaction_data(start_date, end_date, 
-                                         branches, procedures, employees)
+    print("6. 営業目標データを生成中...")
+    sales_targets_df = create_sales_targets(employees_df, products_df)
     
-    # デモパターン追加
-    print("デモパターン追加中...")
-    transactions = add_demo_patterns(transactions)
+    # CSVファイルとして保存
+    print("\nCSVファイルを保存中...")
+    branches_df.to_csv(f'{output_dir}/branches.csv', index=False, encoding='utf-8-sig')
+    employees_df.to_csv(f'{output_dir}/employees.csv', index=False, encoding='utf-8-sig')
+    customers_df.to_csv(f'{output_dir}/customers.csv', index=False, encoding='utf-8-sig')
+    products_df.to_csv(f'{output_dir}/products.csv', index=False, encoding='utf-8-sig')
+    sales_performance_df.to_csv(f'{output_dir}/sales_performance.csv', index=False, encoding='utf-8-sig')
+    sales_targets_df.to_csv(f'{output_dir}/sales_targets.csv', index=False, encoding='utf-8-sig')
     
-    # Excel出力を試みる
-    try:
-        print("Excelファイルとして出力中...")
-        with pd.ExcelWriter('銀行業務デモデータ.xlsx', engine='xlsxwriter') as writer:
-            branches.to_excel(writer, sheet_name='支店マスタ', index=False)
-            procedures.to_excel(writer, sheet_name='手続きマスタ', index=False)
-            employees.to_excel(writer, sheet_name='従業員マスタ', index=False)
-            transactions.to_excel(writer, sheet_name='処理履歴', index=False)
-            
-            # デモ用サマリも作成
-            summary = transactions.groupby(['支店名', '手続き名称']).agg({
-                '処理時間_分': ['mean', 'count'],
-                'エラー有無': 'sum',
-                '顧客満足度': 'mean'
-            }).round(2)
-            summary.to_excel(writer, sheet_name='サマリ')
-        
-        print("✅ Excelファイル '銀行業務デモデータ.xlsx' を生成しました。")
-        
-    except ImportError:
-        print("xlsxwriterがインストールされていないため、CSVファイルとして出力します...")
-        
-        # CSVファイルとして出力
-        branches.to_csv('支店マスタ.csv', index=False, encoding='utf-8-sig')
-        procedures.to_csv('手続きマスタ.csv', index=False, encoding='utf-8-sig')
-        employees.to_csv('従業員マスタ.csv', index=False, encoding='utf-8-sig')
-        transactions.to_csv('処理履歴.csv', index=False, encoding='utf-8-sig')
-        
-        # サマリも作成
-        summary = transactions.groupby(['支店名', '手続き名称']).agg({
-            '処理時間_分': ['mean', 'count'],
-            'エラー有無': 'sum',
-            '顧客満足度': 'mean'
-        }).round(2)
-        summary.to_csv('サマリ.csv', encoding='utf-8-sig')
-        
-        print("✅ 以下のCSVファイルを生成しました：")
-        print("   - 支店マスタ.csv")
-        print("   - 手続きマスタ.csv")
-        print("   - 従業員マスタ.csv")
-        print("   - 処理履歴.csv")
-        print("   - サマリ.csv")
-        
-        print("\n💡 ヒント: Excelファイルとして出力したい場合は以下を実行してください：")
-        print("   pip install xlsxwriter")
-    
-    # データ統計を表示
-    print("\n📊 生成データ統計:")
-    print(f"   - 支店数: {len(branches)}")
-    print(f"   - 従業員数: {len(employees)}")
-    print(f"   - 手続き種類: {len(procedures)}")
-    print(f"   - 処理履歴数: {len(transactions):,}")
-    print(f"   - データ期間: {start_date.strftime('%Y/%m/%d')} ～ {end_date.strftime('%Y/%m/%d')}")
-    
-    print("\n📋 手続き別統計:")
-    print(f"   - 最短処理: {procedures.loc[procedures['標準処理時間_分'].idxmin(), '手続き名称']} ({procedures['標準処理時間_分'].min()}分)")
-    print(f"   - 最長処理: {procedures.loc[procedures['標準処理時間_分'].idxmax(), '手続き名称']} ({procedures['標準処理時間_分'].max()}分)")
-    print(f"   - 平均処理時間: {procedures['標準処理時間_分'].mean():.1f}分")
-    
-    print("\n🏢 支店別処理件数TOP5:")
-    branch_counts = transactions['支店名'].value_counts().head()
-    for branch, count in branch_counts.items():
-        print(f"   - {branch}: {count:,}件")
-
+    # サマリー情報の表示
+    print("\n=== データ生成完了 ===")
+    print(f"支店数: {len(branches_df)}")
+    print(f"営業担当者数: {len(employees_df)}")
+    print(f"顧客数: {len(customers_df)}")
+    print(f"商品数: {len(products_df)}")
+    print(f"取引件数: {len(sales_performance_df)}")
+    print(f"目標レコード数: {len(sales_targets_df)}")
+    print(f"\nデータは '{output_dir}' ディレクトリに保存されました。")
 
 if __name__ == "__main__":
-    export_demo_data()
-    print("\n✨ デモデータの生成が完了しました！")
+    main()
