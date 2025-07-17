@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power BI 製品分析用メジャー&設定完全ガイド</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .analysis-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 8px 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin: 2px;
+        }
+        
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .tab.active {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            transform: scale(1.05);
+        }
+        
+        .analysis-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .analysis-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .analysis-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+            margin-bottom: 25px;
+        }
+        
+        .analysis-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dax-block {
+            background: #1a365d;
+            color: #90cdf4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            border-left: 4px solid #4299e1;
+            overflow-x: auto;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+        
+        .dax-title {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .visual-setup {
+            background: rgba(102, 126, 234, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .visual-setup h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .setup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 10px 0;
+        }
+        
+        .setup-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .setup-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .setup-value {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 3px;
+        }
+        
+        .insights-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #155724;
+        }
+        
+        .insights-box h4 {
+            margin-bottom: 8px;
+            color: #155724;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+            counter-reset: step-counter;
+        }
+        
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 6px;
+            position: relative;
+            padding-left: 40px;
+            font-size: 0.9rem;
+        }
+        
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+        }
+        
+        .measure-category {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .copy-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-left: 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-button:hover {
+            background: #218838;
+        }
+        
+        .complexity-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .easy { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .hard { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Power BI 製品分析用メジャー&設定完全ガイド</h1>
+            <p style="color: #666; margin-top: 10px;">7つの分析軸を実装するための詳細手順</p>
+        </div>
+        
+        <div class="analysis-tabs">
+            <button class="tab active" onclick="showAnalysis('risk')">📊 リスク収益性</button>
+            <button class="tab" onclick="showAnalysis('age')">👥 年齢層選好</button>
+            <button class="tab" onclick="showAnalysis('channel')">🏪 チャネル効率</button>
+            <button class="tab" onclick="showAnalysis('complexity')">⚙️ 複雑度成約</button>
+            <button class="tab" onclick="showAnalysis('digital')">💻 デジタル成長</button>
+            <button class="tab" onclick="showAnalysis('commission')">💰 手数料貢献</button>
+            <button class="tab" onclick="showAnalysis('portfolio')">📈 ポートフォリオ</button>
+        </div>
+        
+        <!-- リスクレベル別収益性分析 -->
+        <div id="risk" class="analysis-content active">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    📊 リスクレベル別収益性分析
+                    <span class="complexity-indicator easy">初級</span>
+                </div>
+                
+                <div class="measure-category">
+                    <h3>基本メジャー（4個）</h3>
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 1. リスクレベル別平均手数料率</div>
+リスク別平均手数料率 = 
+CALCULATE(
+    AVERAGEX(
+        SUMMARIZE(
+            sales_performance,
+            products[product_id],
+            products[risk_level],
+            "商品手数料率", RELATED(products[commission_rate])
+        ),
+        [商品手数料率]
+    )
+)
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 2. リスク調整済み収益率</div>
+リスク調整済み収益率 = 
+VAR リスク係数 = 
+    SWITCH(
+        SELECTEDVALUE(products[risk_level]),
+        "低リスク", 1.0,
+        "中リスク", 0.8,
+        "高リスク", 0.6,
+        1.0
+    )
+VAR 総収益 = SUM(sales_performance[commission_amount])
+VAR 総売上 = SUM(sales_performance[amount])
+RETURN
+DIVIDE(総収益, 総売上) * リスク係数 * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 3. リスクレベル別売上構成比</div>
+リスク別売上構成比 = 
+VAR 現在のリスクレベル売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        ALLEXCEPT(products, products[risk_level])
+    )
+VAR 総売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        ALL(products[risk_level])
+    )
+RETURN
+DIVIDE(現在のリスクレベル売上, 総売上) * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 4. リスクリターン効率指標</div>
+リスクリターン効率 = 
+VAR 手数料率 = AVERAGEX(
+    FILTER(
+        products,
+        products[risk_level] = SELECTEDVALUE(products[risk_level])
+    ),
+    products[commission_rate]
+)
+VAR リスクスコア = 
+    SWITCH(
+        SELECTEDVALUE(products[risk_level]),
+        "低リスク", 1,
+        "中リスク", 2,
+        "高リスク", 3,
+        2
+    )
+RETURN
+DIVIDE(手数料率, リスクスコア) * 100
+                </div>
+                
+                <div class="visual-setup">
+                    <h4>🎯 推奨ビジュアル設定</h4>
+                    <div class="setup-grid">
+                        <div class="setup-item">
+                            <div class="setup-label">メインチャート</div>
+                            <div class="setup-value">散布図</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">X軸</div>
+                            <div class="setup-value">risk_level</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">Y軸</div>
+                            <div class="setup-value">リスク別平均手数料率</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">サイズ</div>
+                            <div class="setup-value">SUM(sales_performance[amount])</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">色</div>
+                            <div class="setup-value">product_category</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">サブチャート</div>
+                            <div class="setup-value">ドーナツチャート（リスク別売上構成比）</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insights-box">
+                    <h4>💡 分析の洞察</h4>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>高リスク商品の収益性がリスクに見合っているか評価</li>
+                        <li>低リスク商品の売上構成が過度に高くないか確認</li>
+                        <li>リスク調整後の収益率で真の商品価値を測定</li>
+                        <li>バランスの取れたリスクポートフォリオの構築指標</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 年齢層別商品選好分析 -->
+        <div id="age" class="analysis-content">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    👥 年齢層別商品選好分析
+                    <span class="complexity-indicator medium">中級</span>
+                </div>
+                
+                <div class="measure-category">
+                    <h3>年齢セグメント別メジャー（5個）</h3>
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 1. 年齢層別商品選好度</div>
+年齢層別選好度 = 
+VAR 現在商品の年齢層売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        KEEPFILTERS(customers[customer_type] = "個人")
+    )
+VAR 年齢層総売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        customers[customer_type] = "個人",
+        ALL(products)
+    )
+VAR 商品総売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        ALL(customers)
+    )
+VAR 全体売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        ALL(customers),
+        ALL(products)
+    )
+RETURN
+DIVIDE(現在商品の年齢層売上 / 年齢層総売上, 商品総売上 / 全体売上) * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 2. 世代別商品浸透率</div>
+世代別浸透率 = 
+VAR 対象世代顧客数 = 
+    CALCULATE(
+        DISTINCTCOUNT(customers[customer_id]),
+        customers[customer_type] = "個人"
+    )
+VAR 商品利用世代顧客数 = 
+    CALCULATE(
+        DISTINCTCOUNT(sales_performance[customer_id]),
+        customers[customer_type] = "個人"
+    )
+RETURN
+DIVIDE(商品利用世代顧客数, 対象世代顧客数) * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 3. 年齢層別平均取引金額</div>
+年齢層別平均取引額 = 
+CALCULATE(
+    AVERAGEX(
+        SUMMARIZE(
+            sales_performance,
+            sales_performance[customer_id],
+            customers[customer_type],
+            "顧客別取引額", SUM(sales_performance[amount])
+        ),
+        [顧客別取引額]
+    ),
+    customers[customer_type] = "個人"
+)
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 4. 商品年齢適合性スコア</div>
+年齢適合性スコア = 
+VAR 商品ターゲット年齢 = SELECTEDVALUE(products[target_age])
+VAR 実際購入年齢分布 = 
+    CALCULATE(
+        COUNTROWS(sales_performance),
+        customers[customer_type] = "個人"
+    )
+VAR マッチング度 = 
+    SWITCH(
+        TRUE(),
+        商品ターゲット年齢 = "全世代", 100,
+        商品ターゲット年齢 = "若年層" && 実際購入年齢分布 > 0, 90,
+        商品ターゲット年齢 = "中年層" && 実際購入年齢分布 > 0, 85,
+        商品ターゲット年齢 = "高齢層" && 実際購入年齢分布 > 0, 80,
+        50
+    )
+RETURN マッチング度
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 5. ライフステージ別収益貢献</div>
+ライフステージ別貢献度 = 
+VAR ライフステージ区分 = 
+    SWITCH(
+        SELECTEDVALUE(products[target_age]),
+        "若年層", "成長期",
+        "中年層", "安定期", 
+        "高齢層", "成熟期",
+        "全世代", "全期間",
+        "その他"
+    )
+VAR ステージ別収益 = 
+    CALCULATE(
+        SUM(sales_performance[commission_amount]),
+        customers[customer_type] = "個人"
+    )
+VAR 総収益 = 
+    CALCULATE(
+        SUM(sales_performance[commission_amount]),
+        ALL(products[target_age])
+    )
+RETURN
+DIVIDE(ステージ別収益, 総収益) * 100
+                </div>
+                
+                <div class="visual-setup">
+                    <h4>🎯 推奨ビジュアル設定</h4>
+                    <div class="setup-grid">
+                        <div class="setup-item">
+                            <div class="setup-label">メインチャート</div>
+                            <div class="setup-value">ヒートマップ（マトリックス）</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">行</div>
+                            <div class="setup-value">products[target_age]</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">列</div>
+                            <div class="setup-value">products[product_category]</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">値</div>
+                            <div class="setup-value">年齢層別選好度</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">条件付き書式</div>
+                            <div class="setup-value">グラデーション（青→赤）</div>
+                        </div>
+                        <div class="setup-item">
+                            <div class="setup-label">サブチャート</div>
+                            <div class="setup-value">複合チャート（浸透率+取引額）</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 販売チャネル別効率性分析 -->
+        <div id="channel" class="analysis-content">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    🏪 販売チャネル別効率性分析
+                    <span class="complexity-indicator medium">中級</span>
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 1. チャネル別成約率</div>
+チャネル別成約率 = 
+VAR チャネル別取引数 = 
+    CALCULATE(
+        DISTINCTCOUNT(sales_performance[transaction_id])
+    )
+VAR チャネル別見込数 = チャネル別取引数 * 2.5 // 想定コンバージョン率40%
+RETURN
+DIVIDE(チャネル別取引数, チャネル別見込数) * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 2. チャネル別効率指標</div>
+チャネル効率指標 = 
+VAR チャネル別売上 = SUM(sales_performance[amount])
+VAR チャネル別取引数 = DISTINCTCOUNT(sales_performance[transaction_id])
+VAR 効率性 = DIVIDE(チャネル別売上, チャネル別取引数)
+VAR チャネルコスト係数 = 
+    SWITCH(
+        SELECTEDVALUE(products[sales_channel]),
+        "全チャネル", 1.0,
+        "営業担当者", 1.8,
+        "店舗・営業", 1.5,
+        "営業・オンライン", 1.2,
+        "営業・店舗", 1.4,
+        1.0
+    )
+RETURN
+DIVIDE(効率性, チャネルコスト係数)
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 3. デジタルチャネル成長率</div>
+デジタル成長率 = 
+VAR 今期デジタル売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        products[is_digital] = TRUE,
+        DATESINPERIOD(
+            sales_performance[transaction_date],
+            MAX(sales_performance[transaction_date]),
+            -3,
+            MONTH
+        )
+    )
+VAR 前期デジタル売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        products[is_digital] = TRUE,
+        DATESINPERIOD(
+            sales_performance[transaction_date],
+            MAX(sales_performance[transaction_date]) - 90,
+            -3,
+            MONTH
+        )
+    )
+RETURN
+DIVIDE(今期デジタル売上 - 前期デジタル売上, 前期デジタル売上) * 100
+                </div>
+            </div>
+        </div>
+        
+        <!-- 商品複雑度別成約率分析 -->
+        <div id="complexity" class="analysis-content">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    ⚙️ 商品複雑度別成約率分析
+                    <span class="complexity-indicator hard">上級</span>
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 1. 複雑度別成約率</div>
+複雑度別成約率 = 
+VAR 複雑度 = SELECTEDVALUE(products[complexity])
+VAR 複雑度別取引数 = 
+    CALCULATE(
+        DISTINCTCOUNT(sales_performance[transaction_id])
+    )
+VAR 基準成約率 = 
+    SWITCH(
+        複雑度,
+        "シンプル", 0.65,
+        "スタンダード", 0.45, 
+        "複雑", 0.25,
+        0.45
+    )
+VAR 実際成約数 = 複雑度別取引数
+VAR 想定商談数 = DIVIDE(実際成約数, 基準成約率)
+RETURN
+DIVIDE(実際成約数, 想定商談数) * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 2. 複雑度コスト効率</div>
+複雑度コスト効率 = 
+VAR 売上高 = SUM(sales_performance[amount])
+VAR 複雑度係数 = 
+    SWITCH(
+        SELECTEDVALUE(products[complexity]),
+        "シンプル", 1.0,
+        "スタンダード", 1.3,
+        "複雑", 1.8,
+        1.0
+    )
+RETURN
+DIVIDE(売上高, 複雑度係数)
+                </div>
+            </div>
+        </div>
+        
+        <!-- デジタル対応商品の成長トレンド -->
+        <div id="digital" class="analysis-content">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    💻 デジタル対応商品の成長トレンド
+                    <span class="complexity-indicator easy">初級</span>
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 1. デジタル商品成長率</div>
+デジタル商品成長率 = 
+VAR 今月売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        products[is_digital] = TRUE,
+        DATESMTD(sales_performance[transaction_date])
+    )
+VAR 前月売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        products[is_digital] = TRUE,
+        PREVIOUSMONTH(sales_performance[transaction_date])
+    )
+RETURN
+DIVIDE(今月売上 - 前月売上, 前月売上) * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 2. デジタル浸透率</div>
+デジタル浸透率 = 
+VAR デジタル売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        products[is_digital] = TRUE
+    )
+VAR 総売上 = SUM(sales_performance[amount])
+RETURN
+DIVIDE(デジタル売上, 総売上) * 100
+                </div>
+            </div>
+        </div>
+        
+        <!-- 手数料率別売上貢献度分析 -->
+        <div id="commission" class="analysis-content">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    💰 手数料率別売上貢献度分析
+                    <span class="complexity-indicator medium">中級</span>
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 1. 手数料率セグメント分類</div>
+手数料率セグメント = 
+VAR 手数料率 = RELATED(products[commission_rate])
+RETURN
+SWITCH(
+    TRUE(),
+    手数料率 <= 1.0, "低手数料（～1.0%）",
+    手数料率 <= 3.0, "中手数料（1.1-3.0%）",
+    手数料率 > 3.0, "高手数料（3.1%～）",
+    "未分類"
+)
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 2. 手数料効率指標</div>
+手数料効率指標 = 
+VAR 手数料収入 = SUM(sales_performance[commission_amount])
+VAR 売上高 = SUM(sales_performance[amount])
+VAR 取引件数 = DISTINCTCOUNT(sales_performance[transaction_id])
+RETURN
+DIVIDE(手数料収入, 取引件数)
+                </div>
+            </div>
+        </div>
+        
+        <!-- 顧客タイプ別商品ポートフォリオ分析 -->
+        <div id="portfolio" class="analysis-content">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    📈 顧客タイプ別商品ポートフォリオ分析
+                    <span class="complexity-indicator hard">上級</span>
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 1. 顧客セグメント別商品集中度</div>
+商品集中度 = 
+VAR 顧客タイプ別売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        ALLEXCEPT(customers, customers[customer_type])
+    )
+VAR 総売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        ALL(customers[customer_type])
+    )
+VAR 商品別売上 = SUM(sales_performance[amount])
+VAR 商品総売上 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        ALL(products)
+    )
+RETURN
+(DIVIDE(商品別売上, 顧客タイプ別売上) / DIVIDE(商品総売上, 総売上)) * 100
+                </div>
+                
+                <div class="dax-block">
+                    <div class="dax-title">// 2. ポートフォリオバランススコア</div>
+ポートフォリオバランス = 
+VAR 個人向け売上比率 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        customers[customer_type] = "個人"
+    ) / SUM(sales_performance[amount])
+VAR 法人向け売上比率 = 
+    CALCULATE(
+        SUM(sales_performance[amount]),
+        customers[customer_type] = "法人"
+    ) / SUM(sales_performance[amount])
+VAR バランススコア = 100 - ABS(個人向け売上比率 - 法人向け売上比率) * 100
+RETURN バランススコア
+                </div>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ 実装時の注意事項</h4>
+            <ol class="step-list">
+                <li>最初に基本的なメジャーから実装し、動作確認してから複雑なメジャーに進む</li>
+                <li>データの品質チェック（NULL値、異常値の処理）を事前に実施</li>
+                <li>メジャーの計算結果が想定範囲内かテストデータで検証</li>
+                <li>パフォーマンス監視（複雑なメジャーは計算時間が長くなる可能性）</li>
+                <li>ユーザーフィードバックを収集して段階的に改善</li>
+            </ol>
+        </div>
+        
+        <div class="insights-box">
+            <h4>🚀 実装優先順位の推奨</h4>
+            <p><strong>1位:</strong> リスクレベル別収益性分析（ビジネスインパクト大）<br>
+            <strong>2位:</strong> デジタル対応商品成長トレンド（戦略的重要性）<br>
+            <strong>3位:</strong>販売チャネル別効率性分析（運営改善効果）<br>
+            <strong>4位:</strong> 手数料率別売上貢献度分析（収益最適化）<br>
+            <strong>5位:</strong> 年齢層別商品選好分析（マーケティング戦略）</p>
+        </div>
+    </div>
+    
+    <script>
+        function showAnalysis(analysisId) {
+            // 全てのコンテンツを非表示
+            const contents = document.querySelectorAll('.analysis-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // 全てのタブを非アクティブ
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // 指定されたコンテンツを表示
+            document.getElementById(analysisId).classList.add('active');
+            
+            // 対応するタブをアクティブに
+            event.target.classList.add('active');
+        }
+        
+        // コピー機能
+        function copyDAX(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('DAXがコピーされました！');
+            });
+        }
+        
+        // アニメーション効果
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.analysis-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
