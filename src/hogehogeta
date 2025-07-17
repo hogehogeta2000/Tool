@@ -1,96 +1,21 @@
-let
-    // Step 1: トランザクションテーブルから最小日付と最大日付を取得
-    TransactionTable = sales_performance,
-    
-    // 日付列を実際の日付型に変換
-    ConvertedDates = Table.TransformColumns(TransactionTable, {{"transaction_date", each Date.FromText(_), type date}}),
-    
-    // 最小日付と最大日付を取得
-    MinDate = List.Min(ConvertedDates[transaction_date]),
-    MaxDate = List.Max(ConvertedDates[transaction_date]),
-    
-    // 日付範囲を月初から月末まで拡張（オプション）
-    StartDate = Date.StartOfMonth(MinDate),
-    EndDate = Date.EndOfMonth(MaxDate),
-    
-    // Step 2: 日付リストを作成
-    DateList = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1,0,0,0)),
-    
-    // Step 3: テーブルに変換
-    DateTable = Table.FromList(DateList, Splitter.SplitByNothing(), {"Date"}, null, ExtraValues.Error),
-    
-    // Step 4: 必要な列を一括で追加
-    CalendarTable = Table.AddColumn(DateTable, "Year", each Date.Year([Date]), Int64.Type),
-    AddMonth = Table.AddColumn(CalendarTable, "Month", each Date.Month([Date]), Int64.Type),
-    AddMonthName = Table.AddColumn(AddMonth, "MonthName", each Date.MonthName([Date]), type text),
-    AddMonthNameShort = Table.AddColumn(AddMonthName, "MonthNameShort", each Date.ToText([Date], "MMM"), type text),
-    AddQuarter = Table.AddColumn(AddMonthNameShort, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
-    AddQuarterNumber = Table.AddColumn(AddQuarter, "QuarterNumber", each Date.QuarterOfYear([Date]), Int64.Type),
-    AddDay = Table.AddColumn(AddQuarterNumber, "Day", each Date.Day([Date]), Int64.Type),
-    AddDayOfWeek = Table.AddColumn(AddDay, "DayOfWeek", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type),
-    AddDayName = Table.AddColumn(AddDayOfWeek, "DayName", each Date.DayOfWeekName([Date]), type text),
-    AddDayNameShort = Table.AddColumn(AddDayName, "DayNameShort", each Date.ToText([Date], "ddd"), type text),
-    AddWeekOfYear = Table.AddColumn(AddDayNameShort, "WeekOfYear", each Date.WeekOfYear([Date]), Int64.Type),
-    AddDayOfYear = Table.AddColumn(AddWeekOfYear, "DayOfYear", each Date.DayOfYear([Date]), Int64.Type),
-    
-    // 年月表示用
-    AddYearMonth = Table.AddColumn(AddDayOfYear, "YearMonth", each Text.From([Year]) & "-" & Text.PadStart(Text.From([Month]), 2, "0"), type text),
-    AddYearQuarter = Table.AddColumn(AddYearMonth, "YearQuarter", each Text.From([Year]) & "-" & [Quarter], type text),
-    
-    // 週末/平日フラグ
-    AddIsWeekend = Table.AddColumn(AddYearQuarter, "IsWeekend", each [DayOfWeek] = 6 or [DayOfWeek] = 7, type logical),
-    AddIsWeekday = Table.AddColumn(AddIsWeekend, "IsWeekday", each not [IsWeekend], type logical),
-    
-    // 営業日フラグ（平日のみ、祝日は考慮しない）
-    AddIsBusinessDay = Table.AddColumn(AddIsWeekday, "IsBusinessDay", each [IsWeekday], type logical),
-    
-    // 月の開始日・終了日
-    AddMonthStart = Table.AddColumn(AddIsWeekday, "MonthStart", each Date.StartOfMonth([Date]), type date),
-    AddMonthEnd = Table.AddColumn(AddMonthStart, "MonthEnd", each Date.EndOfMonth([Date]), type date),
-    
-    // 四半期の開始日・終了日
-    AddQuarterStart = Table.AddColumn(AddMonthEnd, "QuarterStart", each Date.StartOfQuarter([Date]), type date),
-    AddQuarterEnd = Table.AddColumn(AddQuarterStart, "QuarterEnd", each Date.EndOfQuarter([Date]), type date),
-    
-    // 年の開始日・終了日
-    AddYearStart = Table.AddColumn(AddQuarterEnd, "YearStart", each Date.StartOfYear([Date]), type date),
-    AddYearEnd = Table.AddColumn(AddYearStart, "YearEnd", each Date.EndOfYear([Date]), type date),
-    
-    // 相対日付（今日からの日数）
-    AddDaysFromToday = Table.AddColumn(AddYearEnd, "DaysFromToday", each Duration.Days([Date] - Date.From(DateTime.LocalNow())), Int64.Type),
-    
-    // 月別営業日インデックスを効率的に追加
-    // Step 1: 営業日のみをフィルタリング
-    BusinessDaysOnly = Table.SelectRows(AddDaysFromToday, each [IsBusinessDay] = true),
-    
-    // Step 2: 年月でグループ化して、各グループにインデックスを追加
-    GroupedByMonth = Table.Group(BusinessDaysOnly, {"YearMonth"}, {
-        {"BusinessDaysInGroup", each Table.AddIndexColumn(_, "BusinessDayIndexInMonth", 1, 1)}
-    }),
-    
-    // Step 3: グループを展開（重複列を除外）
-    ExpandedBusinessDays = Table.ExpandTableColumn(GroupedByMonth, "BusinessDaysInGroup", 
-        List.Difference(Table.ColumnNames(BusinessDaysOnly) & {"BusinessDayIndexInMonth"}, {"YearMonth"})),
-    
-    // Step 4: 元のテーブルと結合（Left Join）
-    AddBusinessDayIndex = Table.NestedJoin(AddDaysFromToday, {"Date"}, ExpandedBusinessDays, {"Date"}, "BusinessDayData", JoinKind.LeftOuter),
-    ExpandBusinessDayIndex = Table.ExpandTableColumn(AddBusinessDayIndex, "BusinessDayData", {"BusinessDayIndexInMonth"}),
-    
-    // 月内の営業日数を効率的に計算
-    // Step 1: 年月ごとの営業日数を計算
-    BusinessDayCountByMonth = Table.Group(
-        Table.SelectRows(AddDaysFromToday, each [IsBusinessDay] = true), 
-        {"YearMonth"}, 
-        {{"BusinessDaysCount", each Table.RowCount(_), Int64.Type}}
-    ),
-    
-    // Step 2: 元のテーブルと結合してBusinessDaysInMonth列を追加
-    JoinWithBusinessDayCount = Table.NestedJoin(ExpandBusinessDayIndex, {"YearMonth"}, BusinessDayCountByMonth, {"YearMonth"}, "BusinessDayCountData", JoinKind.LeftOuter),
-    AddBusinessDaysInMonth = Table.ExpandTableColumn(JoinWithBusinessDayCount, "BusinessDayCountData", {"BusinessDaysCount"}),
-    RenameBusinessDaysColumn = Table.RenameColumns(AddBusinessDaysInMonth, {{"BusinessDaysCount", "BusinessDaysInMonth"}}),
-    
-    // 日付をソート
-    SortedTable = Table.Sort(RenameBusinessDaysColumn, {{"Date", Order.Ascending}})
-
-in
-    SortedTable
+branch_id,branch_name,region,prefecture,city,full_address,latitude,longitude,branch_type
+BR001,東京本店,関東,東京都,千代田区,東京都千代田区丸の内1-1-1,35.6762,139.6503,本店
+BR002,新宿支店,関東,東京都,新宿区,東京都新宿区西新宿1-6-1,35.6895,139.6917,支店
+BR003,横浜支店,関東,神奈川県,横浜市,神奈川県横浜市西区みなとみらい2-2-1,35.4564,139.6394,支店
+BR004,大宮支店,関東,埼玉県,さいたま市,埼玉県さいたま市大宮区桜木町1-7-5,35.9063,139.6232,支店
+BR005,仙台支店,東北,宮城県,仙台市,宮城県仙台市青葉区中央1-3-1,38.2682,140.8694,支店
+BR006,青森支店,東北,青森県,青森市,青森県青森市新町1-3-7,40.8244,140.7400,支店
+BR007,盛岡支店,東北,岩手県,盛岡市,岩手県盛岡市中央通1-7-25,39.7036,141.1527,支店
+BR008,名古屋支店,中部,愛知県,名古屋市,愛知県名古屋市中村区名駅1-1-1,35.1709,136.8841,支店
+BR009,静岡支店,中部,静岡県,静岡市,静岡県静岡市葵区追手町9-6,34.9756,138.3830,支店
+BR010,大阪支店,関西,大阪府,大阪市,大阪府大阪市中央区本町4-1-13,34.6851,135.5112,支店
+BR011,京都支店,関西,京都府,京都市,京都府京都市下京区烏丸通四条下ル水銀屋町620,35.0037,135.7594,支店
+BR012,神戸支店,関西,兵庫県,神戸市,兵庫県神戸市中央区三宮町1-5-1,34.6951,135.1955,支店
+BR013,広島支店,中国,広島県,広島市,広島県広島市中区基町6-78,34.3853,132.4553,支店
+BR014,岡山支店,中国,岡山県,岡山市,岡山県岡山市北区丸の内1-15-20,34.6617,133.9341,支店
+BR015,福岡支店,九州,福岡県,福岡市,福岡県福岡市中央区天神1-11-17,33.5925,130.3964,支店
+BR016,熊本支店,九州,熊本県,熊本市,熊本県熊本市中央区花畑町1-7,32.8031,130.7079,支店
+BR017,札幌支店,北海道,北海道,札幌市,北海道札幌市中央区大通西3-6,43.0559,141.3478,支店
+BR018,千葉支店,関東,千葉県,千葉市,千葉県千葉市中央区中央2-5-1,35.6074,140.1065,支店
+BR019,宇都宮支店,関東,栃木県,宇都宮市,栃木県宇都宮市大通り2-1-5,36.5654,139.8836,支店
+BR020,金沢支店,中部,石川県,金沢市,石川県金沢市香林坊1-2-40,36.5613,136.6562,支店
