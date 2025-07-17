@@ -68,9 +68,9 @@ let
         {"BusinessDaysInGroup", each Table.AddIndexColumn(_, "BusinessDayIndexInMonth", 1, 1)}
     }),
     
-    // Step 3: グループを展開
+    // Step 3: グループを展開（重複列を除外）
     ExpandedBusinessDays = Table.ExpandTableColumn(GroupedByMonth, "BusinessDaysInGroup", 
-        Table.ColumnNames(BusinessDaysOnly) & {"BusinessDayIndexInMonth"}),
+        List.Difference(Table.ColumnNames(BusinessDaysOnly) & {"BusinessDayIndexInMonth"}, {"YearMonth"})),
     
     // Step 4: 元のテーブルと結合（Left Join）
     AddBusinessDayIndex = Table.NestedJoin(AddDaysFromToday, {"Date"}, ExpandedBusinessDays, {"Date"}, "BusinessDayData", JoinKind.LeftOuter),
